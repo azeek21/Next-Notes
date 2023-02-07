@@ -12,10 +12,8 @@ type ret_type = {
 async function GetProduct(id: string | string[] | undefined): Promise<ret_type> {
     return new Promise((resolve, reject) => {
         setTimeout(() => {
-            console.log(id, typeof(id))
             prods.forEach(prod => {
                 if (prod.id && prod.id === id) {
-                    console.log("FOUND")
                     resolve({data: prod, error: null});
                     return ;
                 }
@@ -45,6 +43,7 @@ export default function ProductDetail() {
         <h1>Product detail: </h1>
         {data?.data && <p>ID: {data?.data.id} - {data?.data.title}</p>}
         {data?.error && <p>ERROR occoured:  {data?.error.message}</p>}
+        {!data ? 'loading...' : ''}
         </>
     )
 }
