@@ -57,7 +57,7 @@ localhost:3000/product/123
 #### More on making sense
 now we can parese the data from route (url) so we can use that data inside our components to show user the needed info like by fetching the product from server with the id parsed from route.
 
-you can look in pages/product/[productsId].tsx file where I simulated fetching data from server and used id wich was passed from dynamic route to fetch that exact product with exact id.
+you can look in ```pages/product/.[productsId].tsx``` file where I simulated fetching data from server and used id wich was passed from dynamic route to fetch that exact product with exact id.
 
 Data will be shown to user if it exists or error message will be shown;
 
@@ -66,3 +66,24 @@ e.g if user visits localhost:300/products/123 and if you have a file named 123.t
 
 ## nested dynamic routes
 what if I want to go to localhost:3000/product/1/review/1 to see the first review feedback for the product. That's a nested dynamic route and of courese we can't create a file for every review inside reviews. :man_shrugging:
+
+so handling is done like this <br/>
+if you plan to go deeper than one level with your dynamic routes create a [routeQueryDataName] FOLDER and make a index.tsx file in it you can still access the dynamic query data with useRoute hook from route.query.routeQueryDataName and to nest it you can repeat the above step over and over again as mucha as you want. <br/>
+
+So one way of handlign localhost:3000/product/1/reviews/1 would look like this.
+```pages/
+--| - product/
+  | -----| - index.tsx // lists all products let's just say
+  | -----| - [productId]/   //this is a folder 
+  | -----| ------| - index.tsx // handle localhost:3000/product/a-product
+  | -----| - reviews/ // folder 
+  | -----| ------| - index.tsx //lists all reviews about a-products
+  | -----| ------| - [reviewId].tsx // handle localhost:3000/product/a-product/reviews/reviewid or you can go even more deeper by creating [reviewId] folder instead of file and go crazy like localhost:3000/product/a-product/reivews/2/comments/3. like I did :smile:
+```
+it's only up to our preferences and creativity at this point. <br/>
+#### Order how nextJs handles routes: 
+1. it first looks for regular filenames for route like ```file.js``` and reders if found <br/>
+2. else it looks for files that handle dynamic routes like ```[file].js``` and renders if found <br/>
+3. else it looks for folders that handle dynamic  routes like ```[folder]/``` and renders ```index.js``` in them <br/>
+4. or goes inside that folder and starts again from point ```1``` if route is nested deeeper.
+cool :cool: right ?
