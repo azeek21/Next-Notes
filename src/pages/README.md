@@ -76,9 +76,9 @@ So one way of handlign localhost:3000/product/1/reviews/1 would look like this.
   | -----| - index.tsx // lists all products let's just say
   | -----| - [productId]/   //this is a folder 
   | -----| ------| - index.tsx // handle localhost:3000/product/a-product
-  | -----| - reviews/ // folder 
-  | -----| ------| - index.tsx //lists all reviews about a-products
-  | -----| ------| - [reviewId].tsx // handle localhost:3000/product/a-product/reviews/reviewid or you can go even more deeper by creating [reviewId] folder instead of file and go crazy like localhost:3000/product/a-product/reivews/2/comments/3. like I did :smile:
+  | -----| ------| - reviews/ // folder 
+  | -----| -------------| - index.tsx //lists all reviews about a-products
+  | -----| -------------| - [reviewId].tsx // handle localhost:3000/product/a-product/reviews/reviewid or you can go even more deeper by creating [reviewId] folder instead of file and go crazy like localhost:3000/product/a-product/reivews/2/comments/3. like I did :smile:
 ```
 it's only up to our preferences and creativity at this point. <br/>
 #### Order how nextJs handles routes: 
