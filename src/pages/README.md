@@ -63,3 +63,6 @@ Data will be shown to user if it exists or error message will be shown;
 
 ### NOTE: if there's a file that matches the dymaic route nextJs renders that page instead of [].tsx
 e.g if user visits localhost:300/products/123 and if you have a file named 123.tsx/js/ts in products directory, that file will be rendered. If 123.tsx doesn't exist, nextJs will render [filename].tsx dynamic query page with 123 as query data accessible from route.query.filename
+
+## nested dynamic routes
+what if I want to go to localhost:3000/product/1/review/1 to see the first review feedback for the product. That's a nested dynamic route and of courese we can't create a file for every review inside reviews. :man_shrugging:
