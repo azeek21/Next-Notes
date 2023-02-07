@@ -46,6 +46,7 @@ export default function ProductDetail() {
         {!data ? 'loading...' : ''}
 
         <sub>You can look at <code style={{backgroundColor: 'rgba(255, 255, 255, 0.2)'}}>#nested dynamic routes</code> section in src/pages/README.md file for more info</sub>
+        <p>Go go <a href={`${ID}/reviews/`} >http://localhost:3000/product/{ID}/reivews/</a> for reviews</p>
         </>
     )
 }
