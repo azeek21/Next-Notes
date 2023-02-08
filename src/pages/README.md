@@ -228,13 +228,21 @@ look at ```src/pages/404.tsx``` for example.
 # Pre rendering and data fetching intro
 Need to be learned what/why pre-rendering and types of it: <br/>
 1. Static Generation
-* - without data
-* - with data
-* - incremental generation
-* - dynamic parameters when fetching data
+    - without data
+    - with data
+    - incremental generation
+    - dynamic parameters when fetching data
 1. Server-side rendering
-* - data fetching
+    - data fetching
 
 - client side data fetching
 - combinig pre-rendering with cilent-side data fetching
 
+### What and whys:
+Firstly, Why Pre-render a page ?
+1. It improves performance .
+    - unlike in react where user waits for react to generate and render DOM notes dynamically.
+    - with pre rendered page HTML is already generated and loads faster
+2. For SEO.
+### What is pre-rendering
+- Pre-rendering refers to process of generating HTML with needed data for the page in application.
