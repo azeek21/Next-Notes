@@ -1,4 +1,22 @@
 # routing
+Contents: <br/>
+<a href="#nested-routes">Nested routess </a> <br/>
+<a href="#dynamic-routes">Dynamic routes</a><br/>
+----- <a href="#dynamic-parts-of-the-route-is-marked-with-filenametsx">Structure</a><br/>
+----- <a href="#getting-query-data-from-routes">Parsing dynamic routes </a><br/>
+----- <a href="#note-if-theres-a-file-that-matches-the-dymaic-route-nextjs-renders-that-page-instead-of-tsx"> NOTE </a><br/>
+<a href="#nested-dynamic-routes">Nested dynamic routes</a><br/>
+----- <a href="#order-how-nextjs-hadnles-routes"> How nextJs handles routes ? </a><br/>
+----- <a href="#catching-all-routes">Catching ALL/ANY routes </a><br/>
+------------ <a href="#note-paramstsx-will-catch-any-route-so-be-careful-and-make-use-of-it-smile"> NOTE on catching all routes</a><br/>
+<br/>
+<a href="#navigation-arrow_down"> NAVIGATION </a><br/>
+----- <a href="#usage"> Client side navigation with ```<Link href=""> </Link>```  </a><br/>
+---------- <a href="#replace-attribute"> replace attribute of Link component </a><br/>
+---------------- <a href="#warning-"> WARNING </a><br/>
+----- <a href="#programmatically-navigation"> Client side navigation with JavaScript </a>   <br/>
+---------- <a href="#--alternative-in-programmatically-navigation"> alternative to Link's replace attribute with JavaScript </a><br/>
+<a href="#custom-404-page"> Custom 404 Page </a><br/><br/><br/>
 nextjs has file/page based routing. Every file inside pages/ folder becomes a route and pages/index.tsx/jsx/js/ts becomes the root route. 
 
 e.g: pages/home.tsx is a route wich renders default exported component inside home.tsx. When you visit localhost:3000/home/ this home.tsx get's rendered. Interesting :thinking:.
@@ -25,8 +43,8 @@ Cool :cool:
 To create a dynamic route like localhost:3000/product/productsId here productsId is any possible non nested route
 eg: localhost:3000/product/1, localhost:3000/product/2, localhost:3000/product/big-red-hat.
 Above 1, 2, big-red-hat all considered dynamic part of the route and we can create one route file that can handle all there routes.
-### dynamic parts of the route is market with [filename].tsx
-so to handle abouve routes we just need below sturcture
+### dynamic parts of the route is marked with [filename].tsx
+so to handle above routes we just need below sturcture
 ````pages/
     | - product /
     ------| - index.tsx
@@ -122,6 +140,83 @@ function Doc() {
     )
 }
 ```
-#### NOTE: [[...params]].tsx will catch ANY route os be careful and make use of it :smile:
+#### NOTE: [[...params]].tsx will catch ANY route so be careful and make use of it :smile:
  
 # END OF ROUTING, READ ABOUT navigation (client side navigation) at navigation branch, you'll need it.
+
+# NAVIGATION :arrow_down:
+Server side navigation can be sometimes not so good as it is not as smooth as client side navigation<br/>
+To give more reactive and smooth feel to our apps we need to use client side navigation <br/>
+Client side navigation is very easy with the help of ```Link component that comes form 'next/link'``` package.
+### Link from 'next/link'
+With Link we can easyly achieve client side navigation.
+#### Usage: 
+```<Link href={ 'link/to/somewhere' }> Go to Somewhere </Link>``` This is basic template for Link component. inside href={} you can give absolute or relative routes and it's take you there as smooth as possible.
+under the hood it renders an ```<a href=""> </a>``` tag with an event listener on it. And as far as I can imageine this event will prevent browser from making a request and takes us to the neede route using javascript instead. <br/>
+#### Navigating to dynamic routes. 
+Works same as static navigation we have seen above just you can manipulate the href attribute string as you want <br/>
+e.g: 
+```
+const r1 = 'feature1'
+const r2 = 'concept1;
+<Link href={`/docs/${r1}/${r2}`}>Got to /docs/${r1}/${r2}</Link>
+```
+#### TRY:
+to see the difference, run the app with ```yarn dev``` and go to <a href="localhost:3000/">localhost:3000/</a> <br/>
+from there you can try and see difference between client side routing and server side routing. <br/>
+### replace attribute
+Function: removes the browsers history stack of navigation in your site and when you go into that link with replace attribute and when you click the back < button you'll end up at home page no matter how deep navigated you were.
+usage: <br/>
+```<Link href='/docs/f1/c1/c4' replace >Go to docs</Link>``` after user goes into link, user will land at home page when clics on back button no matter of navigation history.
+### WARNING !!!
+1. Use plain <a></a> tag for navigation out of your app. e.g link to outisde sources like https://example.com; 
+2. Always use <Link> </Link> to navigate inside your app. Using <a></a> sends a new request to server wich means you'll LOSE ALL CLIENT SIDE STATES of your app.
+### Programmatically Navigation
+Sometimes we need to navigate users without visible links users can click, e.g after some events. 
+Imagine you are building a payment page and user is given some time and after time runs out or user makes a payment in during that time, user needs to be redirected to payment successfull or not sucessful page respectively.
+This is where we need programmatic navigation. <br/>
+HOW TO: <br/>
+use push() method of object returned by useRouter() hook. <br/>
+push() takes a string same as you'd pass to href={} tag of Link component. <br/>
+e.g:
+```
+import <useRouter> from "next/router"
+
+
+export default function PaymentPage() {
+    const router = useRouter()
+
+    useEffect(() => {
+        setTimeOut( () => {
+            // check if use made payment and route user
+            if ('user made payment') {
+                router.push('/payment/success/page')
+            } else {
+                router.push('/payment/fail/page')
+            }
+        }, 20000)
+    }, []);
+    return (
+        <h1> Please pay $xxx in 2 minutes... </h1>
+    )
+}
+```
+Above code is just to show how router.push works don't use it except learning.
+
+
+#### <Link replace> </Link> alternative in programmatically navigation
+just use router.replace('link') instead of router.push('link').
+It will have exactly same begaviour as link's replace attribute which means when users clicks back button after you navigate user to 'link' with router.replace, use'r will go staight back to root route no matter of navigation history.
+
+# CUSTOM 404 PAGE
+create 404.tsx file ! NAME MUST BE EXACTLY 404 (format can be js/jsx/ts/tsx) ! at the root of your routing folder. which is pages folder in our example.
+look at ```src/pages/404.tsx``` for example.
+
+```./pages/
+--- | -> index.js   // example.com/ 
+    | -> other.js   // example.com/other
+    | -> nested/
+    | ------| -> index.js   // example.com/nested
+    | ------| -> deeper.js  // example.com/nested/deeper
+    | -> 404.js     // any incorrect route will be caught in here. | example.com/bad/route/
+```
