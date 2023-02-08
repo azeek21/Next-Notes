@@ -1,5 +1,5 @@
 # routing
-Contents:
+Contents: <br/>
 <a href="#nested-routes">Nested routess </a> <br/>
 <a href="#dynamic-routes">Dynamic routes</a><br/>
 ----- <a href="#dynamic-parts-of-the-route-is-marked-with-filenametsx">Structure</a><br/>
@@ -14,7 +14,7 @@ Contents:
 ----- <a href="#usage"> Client side navigation with ```<Link href=""> </Link>```  </a><br/>
 ---------- <a href="#replace-attribute"> replace attribute of Link component </a><br/>
 ---------------- <a href="#warning-"> WARNING </a><br/>
------ <a her="#programmatically-navigation"> Client side navigation with JavaScript </a><br/>
+----- <a href="#programmatically-navigation"> Client side navigation with JavaScript </a>   <br/>
 ---------- <a href="#--alternative-in-programmatically-navigation"> alternative to Link's replace attribute with JavaScript </a><br/>
 <a href="#custom-404-page"> Custom 404 Page </a><br/><br/><br/>
 nextjs has file/page based routing. Every file inside pages/ folder becomes a route and pages/index.tsx/jsx/js/ts becomes the root route. 
