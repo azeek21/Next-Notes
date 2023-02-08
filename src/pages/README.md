@@ -125,3 +125,31 @@ function Doc() {
 #### NOTE: [[...params]].tsx will catch ANY route os be careful and make use of it :smile:
  
 # END OF ROUTING, READ ABOUT navigation (client side navigation) at navigation branch, you'll need it.
+
+# NAVIGATION :arrow_down:
+Server side navigation can be sometimes not so good as it is not as smooth as client side navigation<br/>
+To give more reactive and smooth feel to our apps we need to use client side navigation <br/>
+Client side navigation is very easy with the help of ```Link component that comes form 'next/link'``` package.
+### Link from 'next/link'
+With Link we can easyly achieve client side navigation.
+#### Usage: 
+```<Link href={ 'link/to/somewhere' }> Go to Somewhere </Link>``` This is basic template for Link component. inside href={} you can give absolute or relative routes and it's take you there as smooth as possible.
+under the hood it renders an ```<a href=""> </a>``` tag with an event listener on it. And as far as I can imageine this event will prevent browser from making a request and takes us to the neede route using javascript instead. <br/>
+#### Navigating to dynamic routes. 
+Works same as static navigation we have seen above just you can manipulate the href attribute string as you want <br/>
+e.g: 
+```
+const r1 = 'feature1'
+const r2 = 'concept1;
+<Link href={`/docs/${r1}/${r2}`}>Got to /docs/${r1}/${r2}</Link>
+```
+#### TRY:
+to see the difference, run the app with ```yarn dev``` and go to <a href="localhost:3000/">localhost:3000/</a> <br/>
+from there you can try and see difference between client side routing and server side routing. <br/>
+### replace attribute
+Function: removes the browsers history stack of navigation in your site and when you go into that link with replace attribute and when you click the back < button you'll end up at home page no matter how deep navigated you were.
+usage: <br/>
+```<Link href='/docs/f1/c1/c4' replace >Go to docs</Link>``` after user goes into link, user will land at home page when clics on back button no matter of navigation history.
+### WARN !!!
+1. Use plain <a></a> tag for navigation out of your app. e.g link to outisde sources like https://example.com; 
+2. Always use <Link> </Link> to navigate inside your app. Using <a></a> sends a new request to server wich means you'll LOSE ALL CLIENT SIDE STATES of your app. 
