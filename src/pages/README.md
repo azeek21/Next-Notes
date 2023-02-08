@@ -190,4 +190,15 @@ Above code is just to show how router.push works don't use it except learning.
 just use router.replace('link') instead of router.push('link').
 It will have exactly same begaviour as link's replace attribute which means when users clicks back button after you navigate user to 'link' with router.replace, use'r will go staight back to root route no matter of navigation history.
 
+# CUSTOM 404 PAGE
+create 404.tsx file ! NAME MUST BE EXACTLY 404 (format can be js/jsx/ts/tsx) ! at the root of your routing folder. which is pages folder in our example.
+look at ```src/pages/404.tsx``` for example.
 
+```./pages/
+--- | -> index.js   // example.com/ 
+    | -> other.js   // example.com/other
+    | -> nested/
+    | ------| -> index.js   // example.com/nested
+    | ------| -> deeper.js  // example.com/nested/deeper
+    | -> 404.js     // any incorrect route will be caught in here. | example.com/bad/route/
+```
