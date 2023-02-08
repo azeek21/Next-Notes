@@ -150,6 +150,44 @@ from there you can try and see difference between client side routing and server
 Function: removes the browsers history stack of navigation in your site and when you go into that link with replace attribute and when you click the back < button you'll end up at home page no matter how deep navigated you were.
 usage: <br/>
 ```<Link href='/docs/f1/c1/c4' replace >Go to docs</Link>``` after user goes into link, user will land at home page when clics on back button no matter of navigation history.
-### WARN !!!
+### WARNING !!!
 1. Use plain <a></a> tag for navigation out of your app. e.g link to outisde sources like https://example.com; 
-2. Always use <Link> </Link> to navigate inside your app. Using <a></a> sends a new request to server wich means you'll LOSE ALL CLIENT SIDE STATES of your app. 
+2. Always use <Link> </Link> to navigate inside your app. Using <a></a> sends a new request to server wich means you'll LOSE ALL CLIENT SIDE STATES of your app.
+### Programmatically Navigation
+Sometimes we need to navigate users without visible links users can click, e.g after some events. 
+Imagine you are building a payment page and user is given some time and after time runs out or user makes a payment in during that time, user needs to be redirected to payment successfull or not sucessful page respectively.
+This is where we need programmatic navigation. <br/>
+HOW TO: <br/>
+use push() method of object returned by useRouter() hook. <br/>
+push() takes a string same as you'd pass to href={} tag of Link component. <br/>
+e.g:
+```
+import <useRouter> from "next/router"
+
+
+export default function PaymentPage() {
+    const router = useRouter()
+
+    useEffect(() => {
+        setTimeOut( () => {
+            // check if use made payment and route user
+            if ('user made payment') {
+                router.push('/payment/success/page')
+            } else {
+                router.push('/payment/fail/page')
+            }
+        }, 20000)
+    }, []);
+    return (
+        <h1> Please pay $xxx in 2 minutes... </h1>
+    )
+}
+```
+Above code is just to show how router.push works don't use it except learning.
+
+
+#### <Link replace> </Link> alternative in programmatically navigation
+just use router.replace('link') instead of router.push('link').
+It will have exactly same begaviour as link's replace attribute which means when users clicks back button after you navigate user to 'link' with router.replace, use'r will go staight back to root route no matter of navigation history.
+
+
