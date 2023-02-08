@@ -18,6 +18,7 @@ You just need to create a folder structure that looks like this:
     -------|-first.tsx // this is /blog/first route
     -------|-second.tsx // this is /blog/second route
 ```
+
 Cool :cool:
 
 ## dynamic routes
@@ -87,3 +88,40 @@ it's only up to our preferences and creativity at this point. <br/>
 3. else it looks for folders that handle dynamic  routes like ```[folder]/``` and renders ```index.js``` in them <br/>
 4. or goes inside that folder and starts again from point ```1``` if route is nested deeeper.
 cool :cool: right ?
+
+### Catching all routes.
+Imagagine we need all dynamic route parameters in one file. For example we wan't localhost:3000/docs/ catch all the routes that comes after it no matter of nesting level. <br/>
+How do we catch all routes that come after localhost:3000/docs/  ?
+Easy :smile:, in nextJs all you need is to create a file that fullfills following pattern  [...params].js. <br/>
+So to catch all routes comes after example.com/docs/ you would want to create the following folder structure :arrow_down:
+
+```./pages
+---| - docs/
+   | --- | - index.tsx // catches example.com/docs/ itself
+   | --- | - [...params].tsx // catches all routes after example.com/docs/
+```
+So now we can use the route example.com/docs as a landing page for all docs and parse any route that comes after it in [...params].tsx. <br/>
+see ```src/pages/docs/``` for as an example and start the app with ```yarn dev``` and go to ```localhost:3000/docs/some/nested/routeshere/```
+```import {useRouter} from "next/router";
+
+function Doc() {
+    const route = useRouter();
+    // route.query.filename will hold all nested routes as an array of strings which were caught by [...filename].tsx/jsx/js/ts
+    //!!! if nesting is only one level deep, query.params will be a string not an array of strings.
+    const allNestedRoutes = route.query.params; // NOTE: params is exactly same as our filename in our case.
+    return (
+        <>
+        <h1> You came here in this order :arraw_down: </h1>
+            { typeof(allNestedRoutes) == 'object' && 
+            allNestedRoutes.map((param: string, index: number) => <span key={index}> {param} -&gt;</span>)
+            }
+            {
+                typeof(allNestedRoutes) == 'string' && <span>{allNestedRoutes}</span>
+            }
+        </>
+    )
+}
+```
+#### NOTE: [[...params]].tsx will catch ANY route os be careful and make use of it :smile:
+ 
+# END OF ROUTING, READ ABOUT navigation (client side navigation) at navigation branch, you'll need it.
