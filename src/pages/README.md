@@ -1,3 +1,6 @@
+# My note while learning NextJs
+
+
 # routing
 Contents: <br/>
 <a href="#nested-routes">Nested routess </a> <br/>
@@ -220,3 +223,18 @@ look at ```src/pages/404.tsx``` for example.
     | ------| -> deeper.js  // example.com/nested/deeper
     | -> 404.js     // any incorrect route will be caught in here. | example.com/bad/route/
 ```
+
+
+# Pre rendering and data fetching intro
+Need to be learned what/why pre-rendering and types of it: <br/>
+1. Static Generation
+* - without data
+* - with data
+* - incremental generation
+* - dynamic parameters when fetching data
+1. Server-side rendering
+* - data fetching
+
+- client side data fetching
+- combinig pre-rendering with cilent-side data fetching
+
