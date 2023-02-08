@@ -1,4 +1,22 @@
 # routing
+Contents:
+<a href="#nested-routes">Nested routess </a>
+<a href="#dynamic-routes">Dynamic routes</a>
+----- <a href="#dynamic-parts-of-the-route-is-marked-with-filenametsx">Structure</a>
+----- <a href="#getting-query-data-from-routes">Parsing dynamic routes </a>
+----- <a href="#note-if-theres-a-file-that-matches-the-dymaic-route-nextjs-renders-that-page-instead-of-tsx"> NOTE </a>
+<a href="#nested-dynamic-routes">Nested dynamic routes</a>
+----- <a href="#order-how-nextjs-hadnles-routes"> How nextJs handles routes ? </a>
+----- <a her="#catching-all-routes">Catching ALL/ANY routes </a>
+------------ <a her="#note-paramstsx-will-catch-any-route-so-be-careful-and-make-use-of-it-smile"> NOTE on catching all routes</a>
+
+<a her="#navigation-arrow_down"> NAVIGATION </a>
+----- <a her="#usage"> Client side navigation with ```<Link href=""> </Link>```  </a>
+---------- <a her="#replace-attribute"> replace attribute of Link component </a>
+---------------- <a her="#warning-"> WARNING </a>
+----- <a her="#programmatically-navigation"> Client side navigation with JavaScript </a>
+---------- <a her="#--alternative-in-programmatically-navigation"> alternative to Link's replace attribute with JavaScript </a>
+<a her="#custom-404-page"> Custom 404 Page </a>
 nextjs has file/page based routing. Every file inside pages/ folder becomes a route and pages/index.tsx/jsx/js/ts becomes the root route. 
 
 e.g: pages/home.tsx is a route wich renders default exported component inside home.tsx. When you visit localhost:3000/home/ this home.tsx get's rendered. Interesting :thinking:.
@@ -25,8 +43,8 @@ Cool :cool:
 To create a dynamic route like localhost:3000/product/productsId here productsId is any possible non nested route
 eg: localhost:3000/product/1, localhost:3000/product/2, localhost:3000/product/big-red-hat.
 Above 1, 2, big-red-hat all considered dynamic part of the route and we can create one route file that can handle all there routes.
-### dynamic parts of the route is market with [filename].tsx
-so to handle abouve routes we just need below sturcture
+### dynamic parts of the route is marked with [filename].tsx
+so to handle above routes we just need below sturcture
 ````pages/
     | - product /
     ------| - index.tsx
@@ -122,7 +140,7 @@ function Doc() {
     )
 }
 ```
-#### NOTE: [[...params]].tsx will catch ANY route os be careful and make use of it :smile:
+#### NOTE: [[...params]].tsx will catch ANY route so be careful and make use of it :smile:
  
 # END OF ROUTING, READ ABOUT navigation (client side navigation) at navigation branch, you'll need it.
 
