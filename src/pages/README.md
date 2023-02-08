@@ -7,16 +7,16 @@ Contents:
 ----- <a href="#note-if-theres-a-file-that-matches-the-dymaic-route-nextjs-renders-that-page-instead-of-tsx"> NOTE </a><br/>
 <a href="#nested-dynamic-routes">Nested dynamic routes</a><br/>
 ----- <a href="#order-how-nextjs-hadnles-routes"> How nextJs handles routes ? </a><br/>
------ <a her="#catching-all-routes">Catching ALL/ANY routes </a><br/>
------------- <a her="#note-paramstsx-will-catch-any-route-so-be-careful-and-make-use-of-it-smile"> NOTE on catching all routes</a><br/>
+----- <a href="#catching-all-routes">Catching ALL/ANY routes </a><br/>
+------------ <a href="#note-paramstsx-will-catch-any-route-so-be-careful-and-make-use-of-it-smile"> NOTE on catching all routes</a><br/>
 <br/>
-<a her="#navigation-arrow_down"> NAVIGATION </a><br/>
------ <a her="#usage"> Client side navigation with ```<Link href=""> </Link>```  </a><br/>
----------- <a her="#replace-attribute"> replace attribute of Link component </a><br/>
----------------- <a her="#warning-"> WARNING </a><br/>
+<a href="#navigation-arrow_down"> NAVIGATION </a><br/>
+----- <a href="#usage"> Client side navigation with ```<Link href=""> </Link>```  </a><br/>
+---------- <a href="#replace-attribute"> replace attribute of Link component </a><br/>
+---------------- <a href="#warning-"> WARNING </a><br/>
 ----- <a her="#programmatically-navigation"> Client side navigation with JavaScript </a><br/>
----------- <a her="#--alternative-in-programmatically-navigation"> alternative to Link's replace attribute with JavaScript </a><br/>
-<a her="#custom-404-page"> Custom 404 Page </a><br/><br/><br/>
+---------- <a href="#--alternative-in-programmatically-navigation"> alternative to Link's replace attribute with JavaScript </a><br/>
+<a href="#custom-404-page"> Custom 404 Page </a><br/><br/><br/>
 nextjs has file/page based routing. Every file inside pages/ folder becomes a route and pages/index.tsx/jsx/js/ts becomes the root route. 
 
 e.g: pages/home.tsx is a route wich renders default exported component inside home.tsx. When you visit localhost:3000/home/ this home.tsx get's rendered. Interesting :thinking:.
