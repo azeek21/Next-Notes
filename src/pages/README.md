@@ -263,4 +263,28 @@ Page can be build once and cached by a CDN and served to client almost instantly
 - documentatin and marketing pages where data isn't highly dynamic and not specific for evey user.
 <br/>
 
+#### How statig generation works
+So static pages are generated (rendered into whole HTML pages from components) during build and served to user. That's it.
+* Static generation is default behaviour of NextJs nothing to be done by user.
+#### Static generation with data fetching.
+As static pages are build once and served many times we can also add data from outer sources. Data that is not subject to changes often is best suitable for Static generation with data fetching. <br/>
 
+To use data fetching you need to export a function called getStaticProps from the js/ts/jsx/tsx file inside pages folder. NextJs automaticly calls that function in the server during build and fetches data and passes it as props to component that's defined in the same file.
+
+* NOTE: getStaticProps must return an object with a props field. The data inside this specific props field will be passed to component as a parameter inside the same file.
+
+* Component: To use components all you need is to create and import component and use them. 
+    - NOTE: DON'T declare your component files inside pages folder or anywhere where your routing root starts from, othervise NextJs will treat it like a route and things get messed up. You can create your components folder and files in anywhere other than routing root folder scheme. Name doesn't really matter as long as you understand what you doing.
+        - NOTE: NextJs by convention uses kebab-case unlike ReactJs so it's a good practice to follow the convention to make it easier for yourself and everyone to work on the app in the future.
+
+EXAMPLE: Have a look in my src folder, users.tsx in pages folder and user.tsx file in components folder.
+```
+./src/                  // A folder containing components and pages.
+--| -> pages/           // beginning of route (root) (example.com/)
+  |    | -> users.tsx   // example.com/users | uses User from components/, exports getStaticProps to fetch data.
+  | -> components/      // hols all my components, NextJs will ignore this.
+  |    | -> user.tsx    // declaration of User component to be used in users.tsx
+```
+### Additions to SSG (getStaticProps and Link magic)
+When we build the app it builds all the pages as we mentioned earlier, AND <br/>
+Here's the big brain moment: If the page user request has any <Link>s to other pages that use getStaticProps inside the app, nextJs prefetches the data in the background and caches it :exploding_head: . And when it detects user's willing to go to that page <Link> is pointing to, nextJs check's for any cheanges before even user clicks on the link and renewes the cached data if it's changed othervise it'll not do anything. This gives user a butter smooth experience.

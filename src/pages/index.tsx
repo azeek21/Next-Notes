@@ -16,10 +16,19 @@ export default function Home() {
         }}>Hello world !</h1>
 
         <h2>Navigation:</h2>
-        <div> <code>Client side</code> navigation:  <Link href={'/blog'}> Go to blog</Link> | Doesn't make a request to server</div>
-        <div> <code>Server side</code> navigation without element from 'next/link':   <a href='/blog'>Go to blog</a> | Makes a request to server</div>
-        <div> <code>Programmatical navigation</code> click following button to try: <button onClick={gotoDocs} >Take me deep into docs</button> | doesn't make request to server</div>
+        <div> <code>Client side</code> navigation:  <Link href={'/blog'}> Go to blog</Link> | Does not make a request to server</div>
+        <div> <code>Server side</code> navigation without element from next/link:   <a href='/blog'>Go to blog</a> | Makes a request to server</div>
+        <div> <code>Programmatical navigation</code> click following button to try: <button onClick={gotoDocs} >Take me deep into docs</button> | does not make request to server</div>
+        
+        <br/>
+        
         <p>See <code>src/pages/index.tsx </code> and <code>src/pages/README.md/#NAVIGATION </code> for usage</p>
+        
+        <br/>
+        <br/>
+        <br/>
+
+        <Link href='/users'> Users -&gt; </Link>
         </div>
     )
 };
