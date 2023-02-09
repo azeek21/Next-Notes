@@ -246,3 +246,21 @@ Firstly, Why Pre-render a page ?
 2. For SEO.
 ### What is pre-rendering
 - Pre-rendering refers to process of generating HTML with needed data for the page in application.
+
+## how to pre-render ?
+NextJs has 2 types of pre-rendering
+1. static generation
+2. server-side rendering
+
+### Static generation concept
+HTML pages are generated at build time (when we build the application with ```yarn build``` or ```npm build```) <br/>
+HTML with all data for content of the pageis generated in advance during build <br/>
+It's recommended type of pre-rendering whenever possible because <br/>
+Page can be build once and cached by a CDN and served to client almost instantly whenever requested.
+#### Best places to use static generation
+- Blog pages
+- e-commerce product pages
+- documentatin and marketing pages where data isn't highly dynamic and not specific for evey user.
+<br/>
+
+
