@@ -266,7 +266,8 @@ Page can be build once and cached by a CDN and served to client almost instantly
 #### How statig generation works
 So static pages are generated (rendered into whole HTML pages from components) during build and served to user. That's it.
 * Static generation is default behaviour of NextJs nothing to be done by user.
-#### Static generation with data fetching.
+#### Static generation with data fetching. getStaticProps
+## getStaticProps
 As static pages are build once and served many times we can also add data from outer sources. Data that is not subject to changes often is best suitable for Static generation with data fetching. <br/>
 
 To use data fetching you need to export a function called getStaticProps from the js/ts/jsx/tsx file inside pages folder. NextJs automaticly calls that function in the server during build and fetches data and passes it as props to component that's defined in the same file.
@@ -288,3 +289,76 @@ EXAMPLE: Have a look in my src folder, users.tsx in pages folder and user.tsx fi
 ### Additions to SSG (getStaticProps and Link magic)
 When we build the app it builds all the pages as we mentioned earlier, AND <br/>
 Here's the big brain moment: If the page user request has any <Link>s to other pages that use getStaticProps inside the app, nextJs prefetches the data in the background and caches it :exploding_head: . And when it detects user's willing to go to that page <Link> is pointing to, nextJs check's for any cheanges before even user clicks on the link and renewes the cached data if it's changed othervise it'll not do anything. This gives user a butter smooth experience.
+<br/>
+
+here's full code:
+```./src/pages/users.tsx:```
+
+```
+// my component from outside of routing root (pages) [mandatory]
+import User from "@/components/user"
+// my function from outside of routing root (pages) [not suer, but must be mandatory]
+import fetchUsers from "@/fetchers/fetch-users"
+
+// User type
+import { UserType } from "@/types/types"
+
+// this component will be rendered in /users route. e.g: example.com/users
+export default function Users({users}: {users: UserType[]}) {
+    return (
+        <>
+        { users.length && 
+            users.map(u => <User key={u.id} user={u} />)
+        }
+        </>
+    )
+}
+
+// nextJs will call this function during build in the server and
+// save the return data with pre-rendered (generated) HTML to serve to user;
+export async function getStaticProps() {
+    const users = await fetchUsers();
+
+    return {
+        props: {
+            users: users
+        }
+    }
+}
+
+```
+
+```./src/components/user.txs```
+
+```
+
+import { UserType } from "@/types/types";
+
+// just a regular user component wich get's a user as prop and return JSX filling the info of user.
+export default function User({user}: {user: UserType}) {
+    
+    return (
+        <>
+        <h1>{user.name}</h1>
+        <p>{user.email}</p>
+        <p>{user.phone}</p>
+        </>
+    )
+}
+
+```
+
+``` ./src/fetchers/fetch-users.tsx  ```
+
+```
+
+import { UserType } from "@/types/types";
+
+const usersEndpoint = "https://jsonplaceholder.typicode.com/users";
+
+export default async function fetchUsers(): Promise<UserType[]>{
+    const users = await (await fetch(usersEndpoint)).json();
+    return users;
+}
+
+```
