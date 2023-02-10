@@ -25,3 +25,10 @@ export type UserType = {
     website: string;
     company: string;
 }
+
+export type PostType = {
+    userId: number,
+    id: number,
+    title: string,
+    body: string,
+}

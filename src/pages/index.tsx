@@ -28,7 +28,11 @@ export default function Home() {
         <br/>
         <br/>
 
+        <h3>This is SSG with static data.</h3>
         <Link href='/users'> Users -&gt; </Link>
+
+        <h3>THis is SSG with dynamic parameters</h3>
+        <Link href={'/posts'} > Posts -&gt; </Link>
         </div>
     )
 };

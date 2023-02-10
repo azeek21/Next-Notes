@@ -365,3 +365,91 @@ export default async function fetchUsers(): Promise<UserType[]>{
 }
 
 ```
+
+## SSG with dynamic parameters
+* Why we need ? <br/>
+    -- Imagine we have a dynamic route to a page and that page in turn needs to fetch some data depending on that dynamic route's paremeter For example: example.com/posts/postId . Here postId can range all the way up to infinity or even strings or anything, afterall, it's a dynamic parameter,  but we serve with [postdId].tsx file inside pages/posts/ folder as we learned in <a href="#dyanmic-routes"> dyanmic routes </a> section. And we need them to be Staticly Generated, so that our website will be smoother, and easire for search engine indexers.
+
+* How we do it ? <br/>
+## getStaticPaths is the answer
+* From our dynamic route file ```[postId].tsx```, in our example, we need to export an async function named exactly getStaticPaths. <br/>
+* getStaticPaths must return an object with 2 mandatory keys. 
+    * ```paths``` -> an array of objects wich include another mandatory key named ```params``` which in turn must be an object and has to have an key named exactly same as the name of the file ,but without bracets and format, getStaticPaths function is being exported from.
+    * ```fallback``` -> mode how NextJs treats routes we didn't include in ```paths```. I'll tell about it later. <br/>
+    For our example: example.com/posts/3 or example.com/posts/4 or anything other than 1 and 2 will be handled by the mode we specify in ```fallback```
+EXAMPLE: ```pages/posts/[postId].tsx```
+```
+
+export async function getStaticPaths() {
+    return {
+        paths: [
+            {
+                params: { postId: '1' },
+            },
+            {
+                params: { postId: '2' },
+            },
+        ],
+        fallback: false,
+    }
+}
+
+```
+So nextJs accepts this object and if you look close you can see paths is an array of objects that means NextJs will simulate a route with the specified params in these objects and generate Static HTML pages during build.  <br/>
+Here's how it might go for our above example: NextJs accepts our array of objetcs in paths returned by getStaticPaths. NextJs then turn by turn generate HTML pages for each object of this array passing parameter's to the generator that we specified in our params: object which is postId in our example. <br/>
+NextJs will generate 2 files for above example during build. which will be served at example.com/posts/1 and example.com/posts/2 respectively. AND WE LET THE NEXTJS KNOW TO DO THIS BY RETURNING THAT OBJECT WICH HAD THESE PARAMS SPECIFIED BY US FROM getStaticPaths. 😮‍💨 I hope now I made it clear. :smile: <br />
+BUT WAIT, that's not it, we still need to fetch data from remote for our dynamic routes, PLEASE read the below section.
+
+## passing args to getStaticProps
+remember <a href="#getStaticProps"> getStaticProps </a> from older talks ? There's more to it, <br/>
+getStaticProps function acceps a parameter wich is routes object returned by useRoutes() by default. <br/>
+Which means we can parse passed parameters from getStaticPaths return value when NextJs tries to generate HTML pages during build. <br/>
+
+EXAMPLE: ```pages/posts/[postId].tsx```
+```
+// look at src/types/typex.ts for type definitions;
+
+import { PostType } from "src/types/types";
+
+export default function Post({post}: {post: PostType}) {
+    return (
+        <div>
+            <h1> {post.title} </h1>
+            <p> {post.body} </p>
+        </div>
+    )
+}
+
+export async function getStaticPaths() {
+
+    return {
+        paths: [
+            {
+                params: {postId: "1"}
+            },
+            {
+                params: {postId: "2"}
+            },
+        ],
+        fallback: true,
+    }
+}
+
+// route ->  object wich we used to get from useRoutes()
+export async function getStaticProps(route) { 
+    const post = await (await fetch("https://jsonplaceholder.typicode.com/posts/" + route.params.postId)).json();
+
+    return {
+        props: {
+            post: post
+        }
+    }
+}
+```
+Now we can calmly proceed to generating HTML static pages for our dynamic routes. <br/>
+### SSG with getStaticPaths & getStaticProps flow
+Here is flow of generation during build -> nextJs will parse paths returned by getStaticPaths and call getStaticProps for each object in paths passing params of that object to getStaticProps, and when getStaticProps return an object which in turn must have an props object, NextJs will call our default exported component passing that props object as parameter and reders returned JSX as static HTML page. <br/>
+and above procedure will be repeated for every single object inside paths returned by getStaticPaths.
+<br/>
+🥵🥵 :smile: THAT'S IT, if you master and deeply understand above concepts, you are done for the most part of the SSG.
+
