@@ -288,7 +288,10 @@ EXAMPLE: Have a look in my src folder, users.tsx in pages folder and user.tsx fi
 ```
 ### Additions to SSG (getStaticProps and Link magic)
 When we build the app it builds all the pages as we mentioned earlier, AND <br/>
-Here's the big brain moment: If the page user request has any <Link>s to other pages that use getStaticProps inside the app, nextJs prefetches the data in the background and caches it :exploding_head: . And when it detects user's willing to go to that page <Link> is pointing to, nextJs check's for any cheanges before even user clicks on the link and renewes the cached data if it's changed othervise it'll not do anything. This gives user a butter smooth experience.
+Here's the big brain moment: If the page user request has any <Link>s to other pages that use getStaticProps inside the app, nextJs prefetches the data in the background and caches it :exploding_head: . And when it detects user's willing to go to that page <Link> is pointing to, nextJs check's for any cheanges before even user clicks on the link and renewes the cached data if it's changed othervise it'll not do anything. This gives user a butter smooth experience.<br/>
+
+* If current page contains a <Link> to another page, when users goes into that page clicking on <Link>, app will not send a request to the server, instead, the page gets rendered on client side with the prefetched JavaScript and Json if it uses any external static data. NOTE: Both JavaScript and Json will be already pre fetched when user is on the previous page that had a <Link /> to it.
+
 <br/>
 
 here's full code:
