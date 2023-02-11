@@ -471,6 +471,40 @@ All HTML is pre-rendered and generated during build and will not change when app
 
 * Unlike the first mode, the path that are not generated at build time will not result in 404. Instead, NextJs serves a fallback version of the page and and generates static page for the path and fetches data using getStaticProps. As soon as NextJs finishes fetching data for the current page that it served fallback version earlier, it sends the fetched json to the client browser and component will receive needed props from the json and will be rendered in the client's side with props. At the same time NextJs saves generated HTML and JSON to pre-renderd pages as if it was generated at build time and will be served as it was generated during build from server just like other pages.
 
+* * HOW TO DELIVER FALBACK VERSION OF THE PAGE ?
+* * - Inside your default exported component you can initialize routes object with useRoutes hook. routes object provides routes.isFalback atribute wich is a boolean which tells the developer wich state of page needs to be returned. So depending on routes.isFalback we can return a loading statement if routes.isFalback is true or the original page itself if routes.isFalback is false. <br/>
+Example: ```./src/pages/posts/[postId].tsx ```
+```
+
+import { PostType } from "@/types/types";
+import { useRouter } from "next/router";
+
+export default function WithPostId({post}: {post: PostType}) {
+    const router = useRouter();
+    
+    // check if we are in falback mode
+    if (router.isFallback) { 
+        // and return a loading page 
+        // loading page can be anything we want 
+        // but lighter and user friendly loaders are better to use.
+        return (
+
+            <h1>Loading ...</h1>
+        )
+    }
+
+    // returning original page if we are not in fallback mode
+    return (
+        <div>
+            <h2>{post.id}: {post.title}</h2>
+            <p>{post.body}</p>
+        </div>
+    )
+}
+
+```
+
+
 ### falback: blocking
 
 * Same as ```fallback: true``` except falback page will not be served. Browser will keep loading untill page is generated in the server and will receive already pre-rendered ready HTML page.
