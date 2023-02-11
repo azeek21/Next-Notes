@@ -475,3 +475,8 @@ All HTML is pre-rendered and generated during build and will not change when app
 
 * Same as ```fallback: true``` except falback page will not be served. Browser will keep loading untill page is generated in the server and will receive already pre-rendered ready HTML page.
 
+### getStaticPaths & getStaticParams & Link magic :smile:
+If you remember from <a href="#additions-to-ssg-getstaticprops-and-link-magic"> here </a> NextJs used to load other pages too in the background if they are mentioned in current page with Link component. This technuque alsgo generates pages in the background too.
+* If current page has any Links to other pages, all data needed for Link will be loaded in the background and If pages needed for Link doesn't exist, nextJs will generate them if Links to these pages are inside the viewport and save them. So when user clicks on a Link there's very high chance that page already exists or is in the process of generation which delivers a lot better performance and smoothness to the user side.
+
+<b> All my examples for SSG, getStaticPaths, getStaticProps and other needed files can be found in ```  ./src/pages/posts/ ``` </b>
