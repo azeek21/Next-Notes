@@ -453,3 +453,25 @@ and above procedure will be repeated for every single object inside paths return
 <br/>
 🥵🥵 :smile: THAT'S IT, if you master and deeply understand above concepts, you are done for the most part of the SSG.
 
+## fallback key returned by getStaticPaths
+As i mentioned earlier, getStaticPaths return an object with 2 mandatory keys, ```paths```, and ```fallback```, we talked about ```paths``` above. <br/>
+* What is ```fallback```:
+    - It is a key tells NextJs what to do when a pre-rendered (SSG generated) HTML file is not found for a dynamic route. <br/> For our the example in <a href="#passing-args-to-getstaticprops"> THIS </a> section, mode specified by ```falback``` will be used. 
+    - ```fallback``` key can be one of these 3 values (modes): ```true | false | "blocking"```. we will talk about each of them below.
+
+### falback: false
+* HTML pages will be generated for every path returned by getStaticPaths function in paths array with calling getStaticProps DURING BUILD TIME.
+* Any OTHER PATH (route) will result (be treated) in (as) 404 (NOT FOUND).
+So If user goes to any other route other than returned by getStaticPaths, user will eventually end up in 404.
+All HTML is pre-rendered and generated during build and will not change when application is up and running.
+
+### falback: true
+
+* HTML pages will be generated for every path as it was set to false.
+
+* Unlike the first mode, the path that are not generated at build time will not result in 404. Instead, NextJs serves a fallback version of the page and and generates static page for the path and fetches data using getStaticProps. As soon as NextJs finishes fetching data for the current page that it served fallback version earlier, it sends the fetched json to the client browser and component will receive needed props from the json and will be rendered in the client's side with props. At the same time NextJs saves generated HTML and JSON to pre-renderd pages as if it was generated at build time and will be served as it was generated during build from server just like other pages.
+
+### falback: blocking
+
+* Same as ```fallback: true``` except falback page will not be served. Browser will keep loading untill page is generated in the server and will receive already pre-rendered ready HTML page.
+
