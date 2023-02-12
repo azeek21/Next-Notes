@@ -5,17 +5,11 @@ const app = express()
 
 const port = 8000;
 
-app.get('/users', (req, res) => {
-    res.send([{
-    id: 'b',
-    name: 'd',
-    username: 'a',
-    email: 'a',
-    address: 'a',
-    phone: 'a',
-    website: 'a',
-    company: 'a',
-}])
+app.get('/data', (req, res) => {
+    res.send({
+    id: 'a',
+    name: 'b',
+})
 })
 
 app.listen(port, () => {

@@ -453,3 +453,131 @@ and above procedure will be repeated for every single object inside paths return
 <br/>
 🥵🥵 :smile: THAT'S IT, if you master and deeply understand above concepts, you are done for the most part of the SSG.
 
+## fallback key returned by getStaticPaths
+As i mentioned earlier, getStaticPaths return an object with 2 mandatory keys, ```paths```, and ```fallback```, we talked about ```paths``` above. <br/>
+* What is ```fallback```:
+    - It is a key tells NextJs what to do when a pre-rendered (SSG generated) HTML file is not found for a dynamic route. <br/> For our the example in <a href="#passing-args-to-getstaticprops"> THIS </a> section, mode specified by ```falback``` will be used. 
+    - ```fallback``` key can be one of these 3 values (modes): ```true | false | "blocking"```. we will talk about each of them below.
+
+### falback: false
+* HTML pages will be generated for every path returned by getStaticPaths function in paths array with calling getStaticProps DURING BUILD TIME.
+* Any OTHER PATH (route) will result (be treated) in (as) 404 (NOT FOUND).
+So If user goes to any other route other than returned by getStaticPaths, user will eventually end up in 404.
+All HTML is pre-rendered and generated during build and will not change when application is up and running.
+
+### falback: true
+
+* HTML pages will be generated for every path as it was set to false.
+
+* Unlike the first mode, the path that are not generated at build time will not result in 404. Instead, NextJs serves a fallback version of the page and and generates static page for the path and fetches data using getStaticProps. As soon as NextJs finishes fetching data for the current page that it served fallback version earlier, it sends the fetched json to the client browser and component will receive needed props from the json and will be rendered in the client's side with props. At the same time NextJs saves generated HTML and JSON to pre-renderd pages as if it was generated at build time and will be served as it was generated during build from server just like other pages.
+
+* * HOW TO DELIVER FALBACK VERSION OF THE PAGE ?
+* * - Inside your default exported component you can initialize routes object with useRoutes hook. routes object provides routes.isFalback atribute wich is a boolean which tells the developer wich state of page needs to be returned. So depending on routes.isFalback we can return a loading statement if routes.isFalback is true or the original page itself if routes.isFalback is false. <br/>
+Example: ```./src/pages/posts/[postId].tsx ```
+```
+
+import { PostType } from "@/types/types";
+import { useRouter } from "next/router";
+
+export default function WithPostId({post}: {post: PostType}) {
+    const router = useRouter();
+    
+    // check if we are in falback mode
+    if (router.isFallback) { 
+        // and return a loading page 
+        // loading page can be anything we want 
+        // but lighter and user friendly loaders are better to use.
+        return (
+
+            <h1>Loading ...</h1>
+        )
+    }
+
+    // returning original page if we are not in fallback mode
+    return (
+        <div>
+            <h2>{post.id}: {post.title}</h2>
+            <p>{post.body}</p>
+        </div>
+    )
+}
+
+```
+
+
+### falback: blocking
+
+* Same as ```fallback: true``` except falback page will not be served. Browser will keep loading untill page is generated in the server and will receive already pre-rendered ready HTML page.
+
+### getStaticPaths & getStaticParams & Link magic :smile:
+If you remember from <a href="#additions-to-ssg-getstaticprops-and-link-magic"> here </a> NextJs used to load other pages too in the background if they are mentioned in current page with Link component. This technuque alsgo generates pages in the background too.
+* If current page has any Links to other pages, all data needed for Link will be loaded in the background and If pages needed for Link doesn't exist, nextJs will generate them if Links to these pages are inside the viewport and save them. So when user clicks on a Link there's very high chance that page already exists or is in the process of generation which delivers a lot better performance and smoothness to the user side.
+
+<b> All my examples for SSG, getStaticPaths, getStaticProps and other needed files can be found in ```  ./src/pages/posts/ ``` </b>
+
+# Problems with Static Site Generation (SSG)
+* Stale data.
+    -   One website is built with SSG the data becomes independent of the source as NextJs gets the data and saves it as json and generates needed static HTML pages. Wich means even if the data on the server where we fetched with getStaticProps change, our pages will still contain old (stale data). Something nobody wants.
+* Long build time.
+    -   The more pages we have, the longer build takes to finish. Add the fact that you have to rebuild the whole app even to make a small change. Not suitable for latest real world big applications, afterall, when we started learning NextJs, all we were after was better performant dynamic apps.
+
+You can recreate the error in this order. <br/>
+I made a mock backend in ```./public/backend/index.ts``` file. Whick returns just a name and id in an object. <br/>
+Then I compiled the index.ts file with typescript and started the server. It returns a JSON object which contains id and name. Now go ahead and start the server with ```node .``` in ```./public/backend```. <br/>
+Now go int ```./src/pages/ssgproblem/index.tsx``` and ucomment 21st line and comment 22 line. <br/>
+Now build the nextJs app with ```yarn build``` | NOTE: backend must be running at this point. <br/>
+When build finshed do a ```yarn start``` and go to <a href="http://localhost:8000/data"> locahlost:3000/data </a> </br>
+PROBLEM itself: you can see name is "a" in this page. <br>
+Now go back to server file in ```./public/backend/index.ts``` change 11st line to anything you want and recompile it with ```tsc index.ts``` and run it again with ```node .```. Now go back to nextJs page which was at localhost:3000/data and refresh the page. <br/>
+SEE ?  name didn't change. Now rebuild the nextJs app and start it again and then go to localhost:3000/data now it changed to whatever we wrote in 11st line of backend. 
+
+What happened: We made a mock backend and built our NextJs with fetching data from it. And we changed the data on our backend and watched how nextjs ssg generated page changes. And we saw that nothing didn't change on the front end, wich explains stale data problem of nextJs SSG very well. 
+
+
+##  ISR (incremental static regeneration)
+
+* What it is?
+    -   ISR (incremental static regenration) updates already static generated pages without developer needing to rebuid the whole app if any data changes. 
+    -   We can set a revalidation timeout form ISR and if page's valid timeout has expired nextJs serves user old cached page but triggers a regeneration in the background and user will be served the new generated file on the next request.
+
+* How to do it?
+We just need to add ```revalidate: timeoutInSeconds``` key to our object returned by ```getStaticProps```, revalidate tells the timeout for our page to be regenrated. <br/>
+EXAMPLE: ```./src/pages/isg/index.tsx```
+
+```
+export default function Page({questions}: {questions: QuestionType[]}) {
+    return (
+        <>
+        <h1>This page has ISG (incremental static generation) implemented</h1>
+        <h2>Below data changes on every reload, try by reloading the page in your browser.</h2>
+        {questions.length &&
+            questions.map(q => <p key={q.id} >{q.id}: {q.question}</p>)
+        }
+        </>
+        )
+}
+
+
+
+export async function getStaticProps() {
+    const question: QuestionType[] = await (await fetch("https://the-trivia-api.com/api/questions/?limit=1")).json();
+    return {
+        props: {
+            questions: question
+        },
+        revalidate: 1
+    }
+}
+
+```
+As you can see, it's very similar to pages we have been writing for ssg before. <br/>
+The only chane is I added ```revalidate:``` key to object returned by ```getStaticProps``` function. <br/>
+This tells NextJs to revalidate every 1 second. BUT<br/>
+BUT NextJs doesn't regenerate every page every second if user doesn't request it. So how it works <br/>
+If user request a page and it is expired (time specificed in revalidate has passed since the last request for the page) NextJs still serves stale (old/cached page) BUT it starts regenerating that page in the background in the server, and for the next request, it'll serve the new generated page. NOW THIS IS REFERRED AS ISG (INCREMENTAL STATIC GENERATION). <br/>
+
+TRY: <br/>
+1. Build the app with ```yarn build```
+2. Visit https://localhost:3000/isr
+3. Refresh the page, you'll be served a new page every second as you refresh the pages.
+4. This is basicly hos ISR works. It helps us to generate static htmls without rebuilding whole app.
