@@ -514,3 +514,21 @@ If you remember from <a href="#additions-to-ssg-getstaticprops-and-link-magic"> 
 * If current page has any Links to other pages, all data needed for Link will be loaded in the background and If pages needed for Link doesn't exist, nextJs will generate them if Links to these pages are inside the viewport and save them. So when user clicks on a Link there's very high chance that page already exists or is in the process of generation which delivers a lot better performance and smoothness to the user side.
 
 <b> All my examples for SSG, getStaticPaths, getStaticProps and other needed files can be found in ```  ./src/pages/posts/ ``` </b>
+
+# Problems with Static Site Generation (SSG)
+* Stale data.
+    -   One website is built with SSG the data becomes independent of the source as NextJs gets the data and saves it as json and generates needed static HTML pages. Wich means even if the data on the server where we fetched with getStaticProps change, our pages will still contain old (stale data). Something nobody wants.
+* Long build time.
+    -   The more pages we have, the longer build takes to finish. Add the fact that you have to rebuild the whole app even to make a small change. Not suitable for latest real world big applications, afterall, when we started learning NextJs, all we were after was better performant dynamic apps.
+
+You can recreate the error in this order. <br/>
+I made a mock backend in ```./public/backend/index.ts``` file. Whick returns just a name and id in an object. <br/>
+Then I compiled the index.ts file with typescript and started the server. It returns a JSON object which contains id and name. Now go ahead and start the server with ```node .``` in ```./public/backend```. <br/>
+Now go int ```./src/pages/ssgproblem/index.tsx``` and ucomment 21st line and comment 22 line. <br/>
+Now build the nextJs app with ```yarn build``` | NOTE: backend must be running at this point. <br/>
+When build finshed do a ```yarn start``` and go to <a href="http://localhost:8000/data"> locahlost:3000/data </a> </br>
+PROBLEM itself: you can see name is "a" in this page. <br>
+Now go back to server file in ```./public/backend/index.ts``` change 11st line to anything you want and recompile it with ```tsc index.ts``` and run it again with ```node .```. Now go back to nextJs page which was at localhost:3000/data and refresh the page. <br/>
+SEE ?  name didn't change. Now rebuild the nextJs app and start it again and then go to localhost:3000/data now it changed to whatever we wrote in 11st line of backend. 
+
+What happened: We made a mock backend and built our NextJs with fetching data from it. And we changed the data on our backend and watched how nextjs ssg generated page changes. And we saw that nothing didn't change on the front end, wich explains stale data problem of nextJs SSG very well. 
