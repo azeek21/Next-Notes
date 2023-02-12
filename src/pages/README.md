@@ -532,3 +532,52 @@ Now go back to server file in ```./public/backend/index.ts``` change 11st line t
 SEE ?  name didn't change. Now rebuild the nextJs app and start it again and then go to localhost:3000/data now it changed to whatever we wrote in 11st line of backend. 
 
 What happened: We made a mock backend and built our NextJs with fetching data from it. And we changed the data on our backend and watched how nextjs ssg generated page changes. And we saw that nothing didn't change on the front end, wich explains stale data problem of nextJs SSG very well. 
+
+
+##  ISR (incremental static regeneration)
+
+* What it is?
+    -   ISR (incremental static regenration) updates already static generated pages without developer needing to rebuid the whole app if any data changes. 
+    -   We can set a revalidation timeout form ISR and if page's valid timeout has expired nextJs serves user old cached page but triggers a regeneration in the background and user will be served the new generated file on the next request.
+
+* How to do it?
+We just need to add ```revalidate: timeoutInSeconds``` key to our object returned by ```getStaticProps```, revalidate tells the timeout for our page to be regenrated. <br/>
+EXAMPLE: ```./src/pages/isg/index.tsx```
+
+```
+export default function Page({questions}: {questions: QuestionType[]}) {
+    return (
+        <>
+        <h1>This page has ISG (incremental static generation) implemented</h1>
+        <h2>Below data changes on every reload, try by reloading the page in your browser.</h2>
+        {questions.length &&
+            questions.map(q => <p key={q.id} >{q.id}: {q.question}</p>)
+        }
+        </>
+        )
+}
+
+
+
+export async function getStaticProps() {
+    const question: QuestionType[] = await (await fetch("https://the-trivia-api.com/api/questions/?limit=1")).json();
+    return {
+        props: {
+            questions: question
+        },
+        revalidate: 1
+    }
+}
+
+```
+As you can see, it's very similar to pages we have been writing for ssg before. <br/>
+The only chane is I added ```revalidate:``` key to object returned by ```getStaticProps``` function. <br/>
+This tells NextJs to revalidate every 1 second. BUT<br/>
+BUT NextJs doesn't regenerate every page every second if user doesn't request it. So how it works <br/>
+If user request a page and it is expired (time specificed in revalidate has passed since the last request for the page) NextJs still serves stale (old/cached page) BUT it starts regenerating that page in the background in the server, and for the next request, it'll serve the new generated page. NOW THIS IS REFERRED AS ISG (INCREMENTAL STATIC GENERATION). <br/>
+
+TRY: <br/>
+1. Build the app with ```yarn build```
+2. Visit https://localhost:3000/isr
+3. Refresh the page, you'll be served a new page every second as you refresh the pages.
+4. This is basicly hos ISR works. It helps us to generate static htmls without rebuilding whole app.
