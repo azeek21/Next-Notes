@@ -580,4 +580,12 @@ TRY: <br/>
 1. Build the app with ```yarn build```
 2. Visit https://localhost:3000/isr
 3. Refresh the page, you'll be served a new page every second as you refresh the pages.
-4. This is basicly hos ISR works. It helps us to generate static htmls without rebuilding whole app.
+4. This is basicly hov ISR works. It helps us to generate static HTMLs without rebuilding whole application over and over again.
+
+
+## Server side rendering.
+    -   SSR problems.
+        -   Can't fetch data at request time (per request.). STALE DATA.
+        
+
+

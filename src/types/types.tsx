@@ -32,3 +32,11 @@ export type PostType = {
     title: string,
     body: string,
 }
+
+
+export type NewsType = {
+    id: number,
+    title: string,
+    description: string,
+    category: string,
+}
