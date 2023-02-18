@@ -645,7 +645,8 @@ for this to work, make sure our mock backend working which was in ```./publick/b
 
 ### SSR with  dynamic parameters.
 
-same as <a href="#ssg-with-dynamic-parameters"> SSG with dynamic params </a>, our asychronus getServerSideProps function receives a default return object of userRouter() from 'next/router'. Wich means we can easily parse the params from ```router.params.fileName```.
+The asychronouse getServerSideProps function by default will be passed a context object by nextJs wich will contain another object called ```params```. ```params``` will contain any dynamic params of the url.  Wich means we can easily parse the params from ```params.fileName```.
+A good parsing in a file called ```[id].tsx]``` would be ```context.params.id```.
 EXAMPLE: ```./src/pages/news/[category].tsx```
 
 ```
