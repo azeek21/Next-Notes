@@ -643,7 +643,23 @@ for this to work, make sure our mock backend working which was in ```./publick/b
 * NOTE: if server side rendered page is not requested by direct get request and is navigated from a Link from other pages of the app, NextJs requests only for the needed dynamic data from the server and renders the page with react on client side which is a genius approach.
 
 
+### SSR with  dynamic parameters.
 
+same as <a href="#ssg-with-dynamic-parameters"> SSG with dynamic params </a>, our asychronus getServerSideProps function receives a default return object of userRouter() from 'next/router'. Wich means we can easily parse the params from ```router.params.fileName```.
+EXAMPLE: ```./src/pages/news/[category].tsx```
+
+```
+export async function getServerSideProps({params}: {params: {category: string}}) {
+    // in case of nested dynamic routes params.category could be list and it messes up everything so be careful lol
+    const news  = await (await fetch(`http://localhost:8000/news?category=${params.category}`)).json();
+    return {
+        props: {
+            news: news,
+        }
+    }
+}
+
+```
 
 
 

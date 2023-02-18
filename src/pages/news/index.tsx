@@ -1,7 +1,7 @@
 import { NewsType } from "@/types/types";
 
 
-function News({news}: {news: NewsType}) {
+export function News({news}: {news: NewsType}) {
 
     return (
         <div>

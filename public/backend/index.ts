@@ -18,32 +18,41 @@ const NEWS = [
         "id": 1,
         "title": "News Article 1",
         "description": "Description 1",
-        "category": "category 1"
+        "category": "adult"
     },
     {
         "id": 2,
         "title": "News Article 2",
         "description": "Description 2",
-        "category": "category 2"
+        "category": "sports"
     },
     {
         "id": 3,
         "title": "News Article 3",
         "description": "Description 3",
-        "category": "category 3"
+        "category": "politics"
     },
     {
         "id": 4,
         "title": "News Article 4",
         "description": "Description 4",
-        "category": "category 4"
+        "category": "sports"
     }
 ]
 
 
+const FileterByCategory = (news: typeof NEWS, category: string) => {
+    if (category){
+        return news.filter(n => n.category === category)
+    }
+    return news;
+}
+
+
 app.get('/news', (req: Request, res: Response) => {
+
     res.send(
-        NEWS
+        FileterByCategory(NEWS, req.query.category as string)
     )
 })
 
