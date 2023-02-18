@@ -660,7 +660,9 @@ export async function getServerSideProps({params}: {params: {category: string}})
 }
 
 ```
-
+For this specific task I also made changes to our backend so that it can handel both just ```/news``` path and any params passed to it. <br/>
+Check out the serer at ```./public/backend/index.ts``` <br/>
+MAKE SURE TO HAVE SERVER RUNNING BY DOING ```node .``` in ```./public/backend/``` folder before trying the app.
 
 
 
