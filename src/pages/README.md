@@ -681,7 +681,7 @@ When:
 E.g: A dashboard where user can see his/her likes, followers count and so on.
 HOW: 
 * You can use data fetching as if you would do in reactjs. inside useEffects hook or other 3rd parties like axios. 
-* NextJs team recomments JWT
+* NextJs team recommends SWR
 Example: ```./src/pages/dashboard```
 ```
 import { useEffect, useState } from "react"
@@ -726,4 +726,48 @@ export {}
 
 
 ```
-MAKE SURE SERVER IS UP AND RUNNING
+MAKE SURE SERVER IS UP AND RUNNING.
+
+### fetching with SWR
+HOW?
+1. Install SWR ```yarn add swr``` or ```npm install swr```
+2. Import it ```import useSWR from 'swr'```
+3. Use it ```const {data, error} = useSWR('some_unique_name', asyncFunctionThatReturnsData) ```
+4. Now you can use data or error anywhere. | Look at my ```./src/pages/dashboard-swr.tsx```
+
+Need to know: 
+* SWR -> stale-while-revalidate (it's clearn no need to explain what it does and how it works)
+* ```useSWR``` takes 2 arguments. 1st has to be unique string and 2nd must be asychronous function that returns actual data.
+* ```useSWR``` return data returned function you passed (2nd argument of useSWR) as soos as data is awailable.
+EXAMPLE: ```./src/pages/dashboard-swr.tsx```
+```
+import useSWR from 'swr';
+
+
+const fetcher = async () => {
+   return (await fetch("http://localhost:8000/dashboard")).json()
+}
+
+export default function Dashboard() {
+    const {data, error} = useSWR('dashboard',fetcher);
+
+
+    if (error) return <h1>Error: No idea what happened</h1>
+    if (!data) return <h2>Loading ...</h2>
+
+    return (
+        <div>
+        <h2>User data fetched with client side data fetching</h2>
+        
+
+        <h4>Likes: {data.likes}</h4>
+                <h4>Followers: {data.followers}</h4>
+                <h4>Posts: {data.posts}</h4>
+                <h5 style={{color: data.status}}  >Statis: {data.status}</h5>
+
+        </div>
+    )
+}
+
+```
+AS ALWAYS, go see if mock backend of ours is working good.
