@@ -584,8 +584,66 @@ TRY: <br/>
 
 
 ## Server side rendering.
-    -   SSR problems.
-        -   Can't fetch data at request time (per request.). STALE DATA.
-        
+*   SSR problems.
+    -   Can't fetch data at request time (per request.). STALE DATA.
+    -   Can't fetch data on client side for SEO reasons.
+    -   Can't have changes relative to specific request (user/personal/personalized). | Can't fetch client side cuz of SEO.
+* SOLUTION: server side rendering. | HTML is generated for every request (not at build time, but at request time).
+How it works: <br/>
+1. NextJs fetches data per request
+2. Renders it.
+3. Sends to client.
+* HOW TO USE SSR:
+-   All we need is to exprt a function called getServerSideProps which has same return values as getStaticProps but runs on every request. What it does is it first fetches data then pass it to page component as props and render the component as a page using these props. 
+
+Example: ```./src/news/index.tsx```
+
+```
+import { NewsType } from "@/types/types";
+
+
+function News({news}: {news: NewsType}) {
+
+    return (
+        <div>
+            <h3>{news.id}: {news.title}</h3>
+            <p>{news.description}</p>
+            <hr/>
+        </div>
+    )
+}
+
+
+export default function NewsList({news}: {news: NewsType[]}) {
+
+    return (
+        <>
+        <h1>List of News Articles:</h1>
+        {
+            news.length &&
+            news.map((n) => <News news={n}/>)
+        }
+        </>
+    )
+}
+
+
+export async function getServerSideProps() {
+    const news  = await (await fetch("http://localhost:8000/news")).json();
+    return {
+        props: {
+            news: news,
+        }
+    }
+
+}
+```
+for this to work, make sure our mock backend working which was in ```./publick/backend/``` you can start it with ```node .```. Then start the front end app with ```yarn dev``` fro root of this app. That's it.
+
+
+
+
+
+
 
 
