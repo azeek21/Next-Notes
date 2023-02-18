@@ -673,3 +673,57 @@ MAKE SURE TO HAVE SERVER RUNNING BY DOING ```node .``` in ```./public/backend/``
 * ```context.res```: response object same as expressJs Response object. <br/>
 * ```context.query```: an object containing all key - value pairs of a ulr query string. e.g: ```/news?category=sport?limit=3``` is going to be ```{category: "sport", limit: "3"}``` inside ```context.query``` <br/>
 * ```context.params```: same as ```useRouter().params```
+
+## client side data fetching
+When: 
+* If page is very user specific
+* if page doesn't need SEO
+E.g: A dashboard where user can see his/her likes, followers count and so on.
+HOW: 
+* You can use data fetching as if you would do in reactjs. inside useEffects hook or other 3rd parties like axios. 
+* NextJs team recomments JWT
+Example: ```./src/pages/dashboard```
+```
+import { useEffect, useState } from "react"
+
+export default function Dashboard() {
+    const [dashboard, setDashboard] = useState({
+        loading: true,
+        likes: 0,
+        posts: 0,
+        followers: 0,
+        status: 'silver'
+    })
+
+
+    useEffect(() => {
+        (async() => {
+            const data = await (await fetch("http://localhost:8000/dashboard")).json()
+            console.log(data)
+            setDashboard(old => ({...data, loading: false}))
+        })()
+    }, [])
+
+    return (
+        <div>
+            <h2>User Dashboard</h2>
+            {dashboard.loading ? <p>Loading ...</p> :
+                <div>
+                <h4>Likes: {dashboard.likes}</h4>
+                <h4>Followers: {dashboard.followers}</h4>
+                <h4>Posts: {dashboard.posts}</h4>
+                <h5 style={{color: dashboard.status}}  >Statis: {dashboard.status}</h5>
+                </div>
+            }
+
+
+        </div>
+    )
+
+}
+
+export {}
+
+
+```
+MAKE SURE SERVER IS UP AND RUNNING

@@ -1,8 +1,9 @@
 import { Express, Request, Response } from "express";
 const express = require('express')
-
+const cors = require('cors');
 const app = express()
 
+app.use(cors())
 const port = 8000;
 
 app.get('/data', (req, res) => {
@@ -56,6 +57,19 @@ app.get('/news', (req: Request, res: Response) => {
     )
 })
 
+app.get('/dashboard', (req: Request, res: Response) => {
+
+    setTimeout(() => {
+        res.send(
+            {
+                likes: 11,
+                followers: 22,
+                posts: 45,
+                status: "gold"
+            }
+        )   
+    }, 1000);
+})
 
 
 app.listen(port, () => {
