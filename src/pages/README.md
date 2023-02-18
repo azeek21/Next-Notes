@@ -643,7 +643,7 @@ for this to work, make sure our mock backend working which was in ```./publick/b
 * NOTE: if server side rendered page is not requested by direct get request and is navigated from a Link from other pages of the app, NextJs requests only for the needed dynamic data from the server and renders the page with react on client side which is a genius approach.
 
 
-### SSR with  dynamic parameters.
+## SSR with  dynamic parameters.
 
 The asychronouse getServerSideProps function by default will be passed a context object by nextJs wich will contain another object called ```params```. ```params``` will contain any dynamic params of the url.  Wich means we can easily parse the params from ```params.fileName```.
 A good parsing in a file called ```[id].tsx]``` would be ```context.params.id```.
@@ -665,5 +665,11 @@ For this specific task I also made changes to our backend so that it can handel 
 Check out the serer at ```./public/backend/index.ts``` <br/>
 MAKE SURE TO HAVE SERVER RUNNING BY DOING ```node .``` in ```./public/backend/``` folder before trying the app.
 
+### more about context object passed to getServerSideProps
 
+```context: GetServerSidePropsConctext``` is an object wich is passed by NextJs to our ```getServerSiderProps``` functin which has a lot of usefult attributes inside. 
 
+* ```context.req```: request object same as expressJs Request object. <br/>
+* ```context.res```: response object same as expressJs Response object. <br/>
+* ```context.query```: an object containing all key - value pairs of a ulr query string. e.g: ```/news?category=sport?limit=3``` is going to be ```{category: "sport", limit: "3"}``` inside ```context.query``` <br/>
+* ```context.params```: same as ```useRouter().params```
