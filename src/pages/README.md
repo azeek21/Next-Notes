@@ -638,8 +638,9 @@ export async function getServerSideProps() {
 
 }
 ```
-for this to work, make sure our mock backend working which was in ```./publick/backend/``` you can start it with ```node .```. Then start the front end app with ```yarn dev``` fro root of this app. That's it.
+for this to work, make sure our mock backend working which was in ```./publick/backend/``` you can start it with ```node .```. Then start the front end app with ```yarn dev``` from root of this app. That's it.
 
+* NOTE: if server side rendered page is not requested by direct get request and is navigated from a Link from other pages of the app, NextJs requests only for the needed dynamic data from the server and renders the page with react on client side which is a genius approach.
 
 
 
