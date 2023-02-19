@@ -880,3 +880,109 @@ Now every time we filter, url will be changed accordingly wich means whenever us
 our getServerSideProps can handle query params so in cooperation with shallow route setting and query param parsing we can achieve great pre-rendering + client side data fetching functionlality.
 
 ! HEY REMEMBER TO CHECH THE BACKEND IF YOU WANNA RUN THE APP
+
+
+# API routes
+* As NextJs is a full stack framework we can write not only front-end with ReactJs but also write APIs for our front end. We will use API routes feature of NextJs to create Restful APIs (rest api) for our front-end.
+* inside ```api``` folder inside ```./src/pages/``` folder we can define the APIs for our app, we can write bussiness logic using NodeJs. 
+* NextJs allows us to write full-stack ReactJs + NodeJs appilcations.
+
+
+## how to create api endpoints with NextJs
+1. Create ```api``` folder inside ```./src/pages/```.
+2. In ```api``` folder create your structure as you want and NextJs will treat file and folders inside ```api``` folder as routes for our api starting with ```/api``` as root. which means ```products.tsx``` file inside ```api``` folder will be mapped to ```example.com/api/products/```  <br/>
+<i>E.g: ```example.com/api/v1/``` will be mapped to ```./src/pages/api/v1/index.js``` file.</i>.
+
+3. export default handler function from your files that respond to requests. Name of the function HAS TO be "handler" and this function will be passed 2 arguments by default. Which are ``` req: NextApiRequest, res: NextApiResponse  ```. 
+4. send data you want from inside ```handler``` function with ``` res.status(200).json({data: "your data here"}) ```
+Example: <br/>
+our ```./src/api/v1/index.ts``` now looks like below and reponds to ```/api/v1``` route.
+```
+import { NextApiRequest, NextApiResponse } from "next";
+
+export default function handler(req: NextApiRequest, res: NextApiResponse) {
+    res.status(200).json({name: "Home API route endpoint for My api V1"});
+}
+
+```
+
+
+### handling get requests
+get request is handled by our handler by default. So the code we wrote above actially satisfies a get request to the ```example.com/api/v1/``` route. <br/>
+<br/>
+Go see ```./src/pages/api/v2/comments/index.ts``` and ```./src/pages/comments/index.tsx``` where I implemented same thing bust once again to make more deeper understaing of the concept.
+
+```
+export default function handler(req, res) {
+    res.status(200).json({data: "Get request successfully handled"});
+}
+
+```
+
+
+### handling post requests
+* To handle request made to our api endpoints in our ```api``` folder. We need to check the type of the request method in our ```handler``` function and handle different request method types differently. 
+E.g: ```./src/pages/api/comments/index.ts```
+```
+import { COMMENTS } from "@/data/comments";
+import { NextApiRequest, NextApiResponse } from "next";
+
+export default function handler(req: NextApiRequest, res: NextApiResponse) {
+
+    if (req.method === 'GET') {
+        // handle get requests
+        res.status(200).json(COMMENTS);
+    } else if (req.method === "POST") {
+        // handle post requests
+        const comment = {...req.body.comment, id: COMMENTS[COMMENTS.length - 1].id + 1};
+        COMMENTS.push(comment);
+        res.status(201).json(comment);
+    }
+ }
+
+```
+
+### handling DELETE requests
+* Delete requests mean we need to delete one or multiple elements from our database our data source in the backend. 
+* Handling delete requests is not hard at all. But there's something to keep in mind, we need specific id for each item we want to delete.
+* It's better practice to write patch and delete logic in dynamic route files like ```[commentId].ts``` so that we can parse params from the url and do the operation on the specific item depending on the request method. <br/>
+HOWTO: just check if ```req.method``` is ```"DELETE"``` as we did in handling POST request (above example). then delete specific item we parsed from query.
+Example: ```./src/pages/api/v1/comments/[id].ts```
+
+```
+export default function handler(req: NextApiRequest, res: NextApiResponse) {
+    if (req.method === "DELETE") {
+        const { id } = req.query;
+        if (id) {
+            // delete item(s) with id equal to id from database
+            // below logic may differend in your case
+            let deleted = {};
+            const index = COMMENTS.findIndex(c => c.id === +id);
+
+            if (index != -1) {
+                deleted = COMMENTS.splice(index, 1);
+            }
+            res.status(200).json(deleted);
+        }
+    }
+}
+```
+
+### Handling PATCH requests
+* PATCH request are commonly used to UPDATE data in the backend/database/data source
+HOWTO: Logic is pretty similar to of DELETE request above as we need specific id and do some work on item with that id, updating (changing/mutating) in our case. <br/>
+SEE: ```./src/pages/comments/index.tsx``` and ```./src/pages/api/v1/comments/[id].tsx``` for examples.
+
+## Catch All routes
+* We might want (need) to handle multiple segment params in our route like ```example.com/api/comments/segment1/segment2/..../segmentN```
+* In such cases we migh use catch all routes. 
+* Refer to <a href="#catching-all-routes"> catch all routes </a> for more.
+
+HOWTO: just create a ```[...filename].ts``` or ```[[...filename]].ts``` file and parse all passed sengments/params from ```req.query.filename```.
+NOTE: ```req.query.filename``` will be an array of strings respectively one string for each query param.
+Example: for url that looks like this ```example.com/api/x1/x2/x3/x4``` a catchall routes file named ```[[...params]].ts``` will be supplied with a request object that contains this ``` ["x1","x2","x3","x4",]  ``` array in ```req.query.params``` <br/>
+
+Go see ```./src/pages/api/v1/comments/[...params].ts``` for a very simple example.
+
+
+NOTE: DON'T MAKE REQUEST TO YOUR OWN API ENDPOINTS INSIDE ```getStaticProps``` or ```getServerSideProps```. Use The actual data instead.
