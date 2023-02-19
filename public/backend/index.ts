@@ -41,6 +41,62 @@ const NEWS = [
     }
 ]
 
+type EventType = {
+    id: string,
+    title: string,
+    description: string,
+    category: "sports" | "politics" | "party" | "education",
+    data: string
+}
+
+
+const EVENTS: EventType[] = [
+    {
+        id: "0",
+        title: "Event  0",
+        description: "desc 0",
+        category: "sports",
+        data: "today"
+    },
+    {
+        id: "1",
+        title: "Event  1",
+        description: "desc 1",
+        category: "politics",
+        data: "today"
+    },
+    {
+        id: "2",
+        title: "Event  2",
+        description: "desc 2",
+        category: "politics",
+        data: "today"
+    },
+    {
+        id: "3",
+        title: "Event  3",
+        description: "desc 3",
+        category: "education",
+        data: "today"
+    },
+    {
+        id: "4",
+        title: "Event  4",
+        description: "desc 4",
+        category: "party",
+        data: "today"
+    },
+    {
+        id: "5",
+        title: "Event  5",
+        description: "desc 5",
+        category: "party",
+        data: "today"
+    },
+
+]
+
+
 
 const FileterByCategory = (news: typeof NEWS, category: string) => {
     if (category){
@@ -68,6 +124,13 @@ app.get('/dashboard', (req: Request, res: Response) => {
                 status: "gold"
             }
         )   
+    }, 1000);
+})
+
+app.get('/events', (req: Request, res: Response) => {
+
+    setTimeout(() => {
+        res.send(EVENTS)
     }, 1000);
 })
 

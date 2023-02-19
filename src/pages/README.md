@@ -771,3 +771,5 @@ export default function Dashboard() {
 
 ```
 AS ALWAYS, go see if mock backend of ours is working good.
+
+## pre-rendering with cliend side data fetching
