@@ -911,6 +911,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
 get request is handled by our handler by default. So the code we wrote above actially satisfies a get request to the ```example.com/api/v1/``` route. <br/>
 <br/>
 Go see ```./src/pages/api/v2/comments/index.ts``` and ```./src/pages/comments/index.tsx``` where I implemented same thing bust once again to make more deeper understaing of the concept.
+
 ```
 export default function handler(req, res) {
     res.status(200).json({data: "Get request successfully handled"});
@@ -918,3 +919,25 @@ export default function handler(req, res) {
 
 ```
 
+
+### handling post requests
+* To handle request made to our api endpoints in our ```api``` folder. We need to check the type of the request method in our ```handler``` function and handle different request method types differently. 
+E.g: ```./src/pages/api/comments/index.ts```
+```
+import { COMMENTS } from "@/data/comments";
+import { NextApiRequest, NextApiResponse } from "next";
+
+export default function handler(req: NextApiRequest, res: NextApiResponse) {
+
+    if (req.method === 'GET') {
+        // handle get requests
+        res.status(200).json(COMMENTS);
+    } else if (req.method === "POST") {
+        // handle post requests
+        const comment = {...req.body.comment, id: COMMENTS[COMMENTS.length - 1].id + 1};
+        COMMENTS.push(comment);
+        res.status(201).json(comment);
+    }
+ }
+
+```
