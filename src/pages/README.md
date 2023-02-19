@@ -941,3 +941,34 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
  }
 
 ```
+
+### handling DELETE requests
+* Delete requests mean we need to delete one or multiple elements from our database our data source in the backend. 
+* Handling delete requests is not hard at all. But there's something to keep in mind, we need specific id for each item we want to delete.
+* It's better practice to write patch and delete logic in dynamic route files like ```[commentId].ts``` so that we can parse params from the url and do the operation on the specific item depending on the request method. <br/>
+HOWTO: just check if ```req.method``` is ```"DELETE"``` as we did in handling POST request (above example). then delete specific item we parsed from query.
+Example: ```./src/pages/api/v1/comments/[id].ts```
+
+```
+export default function handler(req: NextApiRequest, res: NextApiResponse) {
+    if (req.method === "DELETE") {
+        const { id } = req.query;
+        if (id) {
+            // delete item(s) with id equal to id from database
+            // below logic may differend in your case
+            let deleted = {};
+            const index = COMMENTS.findIndex(c => c.id === +id);
+
+            if (index != -1) {
+                deleted = COMMENTS.splice(index, 1);
+            }
+            res.status(200).json(deleted);
+        }
+    }
+}
+```
+
+### Handling PATCH requests
+* PATCH request are commonly used to UPDATE data in the backend/database/data source
+HOWTO: Logic is pretty similar to of DELETE request above as we need specific id and do some work on item with that id, updating (changing/mutating) in our case. <br/>
+SEE: ```./src/pages/comments/index.tsx``` and ```./src/pages/api/v1/comments/[id].tsx``` for examples.
