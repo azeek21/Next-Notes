@@ -580,4 +580,303 @@ TRY: <br/>
 1. Build the app with ```yarn build```
 2. Visit https://localhost:3000/isr
 3. Refresh the page, you'll be served a new page every second as you refresh the pages.
-4. This is basicly hos ISR works. It helps us to generate static htmls without rebuilding whole app.
+4. This is basicly hov ISR works. It helps us to generate static HTMLs without rebuilding whole application over and over again.
+
+
+## Server side rendering.
+*   SSR problems.
+    -   Can't fetch data at request time (per request.). STALE DATA.
+    -   Can't fetch data on client side for SEO reasons.
+    -   Can't have changes relative to specific request (user/personal/personalized). | Can't fetch client side cuz of SEO.
+* SOLUTION: server side rendering. | HTML is generated for every request (not at build time, but at request time).
+How it works: <br/>
+1. NextJs fetches data per request
+2. Renders it.
+3. Sends to client.
+* HOW TO USE SSR:
+-   All we need is to exprt a function called getServerSideProps which has same return values as getStaticProps but runs on every request. What it does is it first fetches data then pass it to page component as props and render the component as a page using these props. 
+
+Example: ```./src/news/index.tsx```
+
+```
+import { NewsType } from "@/types/types";
+
+
+function News({news}: {news: NewsType}) {
+
+    return (
+        <div>
+            <h3>{news.id}: {news.title}</h3>
+            <p>{news.description}</p>
+            <hr/>
+        </div>
+    )
+}
+
+
+export default function NewsList({news}: {news: NewsType[]}) {
+
+    return (
+        <>
+        <h1>List of News Articles:</h1>
+        {
+            news.length &&
+            news.map((n) => <News news={n}/>)
+        }
+        </>
+    )
+}
+
+
+export async function getServerSideProps() {
+    const news  = await (await fetch("http://localhost:8000/news")).json();
+    return {
+        props: {
+            news: news,
+        }
+    }
+
+}
+```
+for this to work, make sure our mock backend working which was in ```./publick/backend/``` you can start it with ```node .```. Then start the front end app with ```yarn dev``` from root of this app. That's it.
+
+* NOTE: if server side rendered page is not requested by direct get request and is navigated from a Link from other pages of the app, NextJs requests only for the needed dynamic data from the server and renders the page with react on client side which is a genius approach.
+
+
+## SSR with  dynamic parameters.
+
+The asychronouse getServerSideProps function by default will be passed a context object by nextJs wich will contain another object called ```params```. ```params``` will contain any dynamic params of the url.  Wich means we can easily parse the params from ```params.fileName```.
+A good parsing in a file called ```[id].tsx]``` would be ```context.params.id```.
+EXAMPLE: ```./src/pages/news/[category].tsx```
+
+```
+export async function getServerSideProps({params}: {params: {category: string}}) {
+    // in case of nested dynamic routes params.category could be list and it messes up everything so be careful lol
+    const news  = await (await fetch(`http://localhost:8000/news?category=${params.category}`)).json();
+    return {
+        props: {
+            news: news,
+        }
+    }
+}
+
+```
+For this specific task I also made changes to our backend so that it can handel both just ```/news``` path and any params passed to it. <br/>
+Check out the serer at ```./public/backend/index.ts``` <br/>
+MAKE SURE TO HAVE SERVER RUNNING BY DOING ```node .``` in ```./public/backend/``` folder before trying the app.
+
+### more about context object passed to getServerSideProps
+
+```context: GetServerSidePropsConctext``` is an object wich is passed by NextJs to our ```getServerSiderProps``` functin which has a lot of usefult attributes inside. 
+
+* ```context.req```: request object same as expressJs Request object. <br/>
+* ```context.res```: response object same as expressJs Response object. <br/>
+* ```context.query```: an object containing all key - value pairs of a ulr query string. e.g: ```/news?category=sport?limit=3``` is going to be ```{category: "sport", limit: "3"}``` inside ```context.query``` <br/>
+* ```context.params```: same as ```useRouter().params```
+
+## client side data fetching
+When: 
+* If page is very user specific
+* if page doesn't need SEO
+E.g: A dashboard where user can see his/her likes, followers count and so on.
+HOW: 
+* You can use data fetching as if you would do in reactjs. inside useEffects hook or other 3rd parties like axios. 
+* NextJs team recommends SWR
+Example: ```./src/pages/dashboard```
+```
+import { useEffect, useState } from "react"
+
+export default function Dashboard() {
+    const [dashboard, setDashboard] = useState({
+        loading: true,
+        likes: 0,
+        posts: 0,
+        followers: 0,
+        status: 'silver'
+    })
+
+
+    useEffect(() => {
+        (async() => {
+            const data = await (await fetch("http://localhost:8000/dashboard")).json()
+            console.log(data)
+            setDashboard(old => ({...data, loading: false}))
+        })()
+    }, [])
+
+    return (
+        <div>
+            <h2>User Dashboard</h2>
+            {dashboard.loading ? <p>Loading ...</p> :
+                <div>
+                <h4>Likes: {dashboard.likes}</h4>
+                <h4>Followers: {dashboard.followers}</h4>
+                <h4>Posts: {dashboard.posts}</h4>
+                <h5 style={{color: dashboard.status}}  >Statis: {dashboard.status}</h5>
+                </div>
+            }
+
+
+        </div>
+    )
+
+}
+
+export {}
+
+
+```
+MAKE SURE SERVER IS UP AND RUNNING.
+
+### fetching with SWR
+HOW?
+1. Install SWR ```yarn add swr``` or ```npm install swr```
+2. Import it ```import useSWR from 'swr'```
+3. Use it ```const {data, error} = useSWR('some_unique_name', asyncFunctionThatReturnsData) ```
+4. Now you can use data or error anywhere. | Look at my ```./src/pages/dashboard-swr.tsx```
+
+Need to know: 
+* SWR -> stale-while-revalidate (it's clearn no need to explain what it does and how it works)
+* ```useSWR``` takes 2 arguments. 1st has to be unique string and 2nd must be asychronous function that returns actual data.
+* ```useSWR``` return data returned function you passed (2nd argument of useSWR) as soos as data is awailable.
+EXAMPLE: ```./src/pages/dashboard-swr.tsx```
+```
+import useSWR from 'swr';
+
+
+const fetcher = async () => {
+   return (await fetch("http://localhost:8000/dashboard")).json()
+}
+
+export default function Dashboard() {
+    const {data, error} = useSWR('dashboard',fetcher);
+
+
+    if (error) return <h1>Error: No idea what happened</h1>
+    if (!data) return <h2>Loading ...</h2>
+
+    return (
+        <div>
+        <h2>User data fetched with client side data fetching</h2>
+        
+
+        <h4>Likes: {data.likes}</h4>
+                <h4>Followers: {data.followers}</h4>
+                <h4>Posts: {data.posts}</h4>
+                <h5 style={{color: data.status}}  >Statis: {data.status}</h5>
+
+        </div>
+    )
+}
+
+```
+AS ALWAYS, go see if mock backend of ours is working good.
+
+## pre-rendering with cliend side data fetching
+example: we want to send user a list of products and then use can filter them by category. We would want to pre-render the list page and fetch the filtered category items client side. 
+TO do that all we need is to use getServerSideProps to get list of products and render a list of them and ship a react fetching logic to the client/user (useEffect and fetch for example). That's it. <br/>
+Look at ```./src/pages/events.tsx```.
+```
+import { useState } from "react";
+
+
+type EventType = {
+    id: string,
+    title: string,
+    description: string,
+    category: "sports" | "politics" | "party" | "education",
+    data: string
+}
+
+// one single event component
+const Event = ({event}: {event: EventType}) => {
+    return (
+        <li>
+            <hr />
+            <h4>{event.title}</h4>
+            <p><span>{event.category}</span>: {event.description}</p>
+        </li>
+    )
+}
+
+// list of all events
+export default function EventList({events}: {events: EventType[]}) {
+    const [evs, setEvs] = useState(events);
+    const [loading, setLoading] = useState(false)
+
+    
+    // create a list of available categories from initial events
+    let tmp: string[] = [];
+    events.forEach(e => {
+        if (!tmp.includes(e.category)) {
+            tmp.push(e.category)
+        }
+    })
+
+    // client side fetching logic
+    const filterBy = async (category: string) => {
+        setLoading(true)
+        const data = await (await fetch("http://localhost:8000/events?category=" + category)).json();
+        setEvs(data)
+        setLoading(false)
+    }
+
+    // array of all buttons responsible for filtering specifig categories.
+    const Buttons = tmp.map((c, i) => <button key={i} type="button" onClick={() => {filterBy(c)}} > {c} </button>)
+
+    return (
+        <ul>
+            <button type="button" onClick={() => {filterBy('ALL')}} >All</button>
+            {Buttons}
+            <h2>List of events: </h2>
+            <div>
+            {loading && <h4>Loading ...</h4>}
+            </div>
+            {(evs && !loading) &&
+                evs.map(e => <Event key={e.id} event={e} />)
+            }
+        </ul>
+    )
+}
+
+// server side fetching and passing initial props to EventList component.
+export async function getServerSideProps() {
+    const data: EventType[] = await (await fetch('http://localhost:8000/events')).json();
+    
+    return {
+        props : {
+            events: data
+        }
+    }
+}
+
+```
+aaand, don't forget to start the server too to try the app.
+
+### More on client side data fetching.
+PROBLEM : remember above scenario where user can filter items by category. We have a problem, there's no way that use can jump into already filtered page from withough going through our app.
+Solution: To do this we need to check for query parameters passed by url inside our ```getServerSideProps``` function. <br/> <i> ```getServerSideProps``` will by default have a ```context: getServerSidePropsContext```. and from this context we can get queryies like this ```context.query.myquery```. <br/>
+E.g: for url of ```example.com/events?myquery=123hi``` our ```context.query.myquery``` is going to be a string of ```"123hi"```. </i>
+Once we parsed the query, we can make a request to the backend with the parameters we fetched. <br/><br/><br/>
+Now we can directly serve filtered data from thes server depending on the query. But there's more...<br/><br/><br/>
+
+PROBLEM 2: If you notice user also can filter the data with buttons using client side data fetching we provided, but if you think deeper, as user filters different categories, our main url doesn't change reponsive to the filter, which means if user ever copies our url after doing some filtering so they can save or share it. User will get a link which goes to list of unfiltered data page. To fix this  we can ...<br/>
+SOLUTION: Use ```useRouter().push("urlmask", undefined, {shallow: true})```. So what useRouter.push() does is it pushes the first argument we provided to the browser url panel which we can make use of pushing url with query set to current filtered category of ours for beeter UX. and set ```shallow: true``` so that browser will not trigger any action after we push it.
+How it looks: ```./src/pages/events.tsx```
+```
+const router = useRouter();
+
+// client side fetching logic
+const filterBy = async (category: string) => {
+    setLoading(true)
+    router.push('/events?category=' + category, undefined, {shallow: true}) // push current page as url
+    const data = await (await fetch("http://localhost:8000/events?category=" + category)).json();
+    setEvs(data)
+    setLoading(false)
+}
+
+```
+Now every time we filter, url will be changed accordingly wich means whenever user copies the url and shares to someone it'll get the persone who clicks on it to this exact filter page, thorugh getServerSideProps we built earlier. REMEMBER ? <br/>
+our getServerSideProps can handle query params so in cooperation with shallow route setting and query param parsing we can achieve great pre-rendering + client side data fetching functionlality.
+
+! HEY REMEMBER TO CHECH THE BACKEND IF YOU WANNA RUN THE APP

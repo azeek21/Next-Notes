@@ -33,6 +33,9 @@ export default function Home() {
 
         <h3>THis is SSG with dynamic parameters</h3>
         <Link href={'/posts'} > Posts -&gt; </Link>
+
+        <h3> This is SSR, page pointed by link below will be rendered at runtime after the request. </h3>
+        <Link href={"/news"} >News -&gt;</Link>
         </div>
     )
 };
