@@ -1,5 +1,7 @@
+import { GetServerSidePropsContext } from "next";
+import { useRouter } from "next/router";
+import { join } from "path";
 import { useState } from "react";
-import useSWR from 'swr';
 
 type EventType = {
     id: string,
@@ -9,9 +11,8 @@ type EventType = {
     data: string
 }
 
+// one single event component
 const Event = ({event}: {event: EventType}) => {
-
-
     return (
         <li>
             <hr />
@@ -21,24 +22,30 @@ const Event = ({event}: {event: EventType}) => {
     )
 }
 
+// list of all events
 export default function EventList({events}: {events: EventType[]}) {
     const [evs, setEvs] = useState(events);
     const [loading, setLoading] = useState(false)
-    let tmp: string[] = [];
+    const router = useRouter();
 
-    events.forEach(e => {
-        if (!tmp.includes(e.category)) {
-            tmp.push(e.category)
-        }
-    })
-
+    // client side fetching logic
     const filterBy = async (category: string) => {
         setLoading(true)
+        router.push('/events?category=' + category, undefined, {shallow: true}) // push current page as url
         const data = await (await fetch("http://localhost:8000/events?category=" + category)).json();
         setEvs(data)
         setLoading(false)
     }
 
+        // create a list of available categories from initial events
+        let tmp: string[] = [];
+        events.forEach(e => {
+            if (!tmp.includes(e.category)) {
+                tmp.push(e.category)
+            }
+        })
+    
+    // array of all buttons responsible for filtering specifig categories.
     const Buttons = tmp.map((c, i) => <button key={i} type="button" onClick={() => {filterBy(c)}} > {c} </button>)
 
     return (
@@ -56,8 +63,14 @@ export default function EventList({events}: {events: EventType[]}) {
     )
 }
 
-export async function getServerSideProps() {
-    const data: EventType[] = await (await fetch('http://localhost:8000/events')).json();
+// server side fetching and passing initial props to EventList component.
+// can handle query params, which will filter events beforehand
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+    let endpoint = 'http://localhost:8000/events';
+    if (context.query.category) {
+        endpoint = endpoint +  "?category=" + context.query.category;
+    }
+    const data: EventType[] = await (await fetch(endpoint)).json();
     
     return {
         props : {
@@ -65,6 +78,3 @@ export async function getServerSideProps() {
         }
     }
 }
-
-
-export {}

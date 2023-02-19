@@ -773,3 +773,110 @@ export default function Dashboard() {
 AS ALWAYS, go see if mock backend of ours is working good.
 
 ## pre-rendering with cliend side data fetching
+example: we want to send user a list of products and then use can filter them by category. We would want to pre-render the list page and fetch the filtered category items client side. 
+TO do that all we need is to use getServerSideProps to get list of products and render a list of them and ship a react fetching logic to the client/user (useEffect and fetch for example). That's it. <br/>
+Look at ```./src/pages/events.tsx```.
+```
+import { useState } from "react";
+
+
+type EventType = {
+    id: string,
+    title: string,
+    description: string,
+    category: "sports" | "politics" | "party" | "education",
+    data: string
+}
+
+// one single event component
+const Event = ({event}: {event: EventType}) => {
+    return (
+        <li>
+            <hr />
+            <h4>{event.title}</h4>
+            <p><span>{event.category}</span>: {event.description}</p>
+        </li>
+    )
+}
+
+// list of all events
+export default function EventList({events}: {events: EventType[]}) {
+    const [evs, setEvs] = useState(events);
+    const [loading, setLoading] = useState(false)
+
+    
+    // create a list of available categories from initial events
+    let tmp: string[] = [];
+    events.forEach(e => {
+        if (!tmp.includes(e.category)) {
+            tmp.push(e.category)
+        }
+    })
+
+    // client side fetching logic
+    const filterBy = async (category: string) => {
+        setLoading(true)
+        const data = await (await fetch("http://localhost:8000/events?category=" + category)).json();
+        setEvs(data)
+        setLoading(false)
+    }
+
+    // array of all buttons responsible for filtering specifig categories.
+    const Buttons = tmp.map((c, i) => <button key={i} type="button" onClick={() => {filterBy(c)}} > {c} </button>)
+
+    return (
+        <ul>
+            <button type="button" onClick={() => {filterBy('ALL')}} >All</button>
+            {Buttons}
+            <h2>List of events: </h2>
+            <div>
+            {loading && <h4>Loading ...</h4>}
+            </div>
+            {(evs && !loading) &&
+                evs.map(e => <Event key={e.id} event={e} />)
+            }
+        </ul>
+    )
+}
+
+// server side fetching and passing initial props to EventList component.
+export async function getServerSideProps() {
+    const data: EventType[] = await (await fetch('http://localhost:8000/events')).json();
+    
+    return {
+        props : {
+            events: data
+        }
+    }
+}
+
+```
+aaand, don't forget to start the server too to try the app.
+
+### More on client side data fetching.
+PROBLEM : remember above scenario where user can filter items by category. We have a problem, there's no way that use can jump into already filtered page from withough going through our app.
+Solution: To do this we need to check for query parameters passed by url inside our ```getServerSideProps``` function. <br/> <i> ```getServerSideProps``` will by default have a ```context: getServerSidePropsContext```. and from this context we can get queryies like this ```context.query.myquery```. <br/>
+E.g: for url of ```example.com/events?myquery=123hi``` our ```context.query.myquery``` is going to be a string of ```"123hi"```. </i>
+Once we parsed the query, we can make a request to the backend with the parameters we fetched. <br/><br/><br/>
+Now we can directly serve filtered data from thes server depending on the query. But there's more...<br/><br/><br/>
+
+PROBLEM 2: If you notice user also can filter the data with buttons using client side data fetching we provided, but if you think deeper, as user filters different categories, our main url doesn't change reponsive to the filter, which means if user ever copies our url after doing some filtering so they can save or share it. User will get a link which goes to list of unfiltered data page. To fix this  we can ...<br/>
+SOLUTION: Use ```useRouter().push("urlmask", undefined, {shallow: true})```. So what useRouter.push() does is it pushes the first argument we provided to the browser url panel which we can make use of pushing url with query set to current filtered category of ours for beeter UX. and set ```shallow: true``` so that browser will not trigger any action after we push it.
+How it looks: ```./src/pages/events.tsx```
+```
+const router = useRouter();
+
+// client side fetching logic
+const filterBy = async (category: string) => {
+    setLoading(true)
+    router.push('/events?category=' + category, undefined, {shallow: true}) // push current page as url
+    const data = await (await fetch("http://localhost:8000/events?category=" + category)).json();
+    setEvs(data)
+    setLoading(false)
+}
+
+```
+Now every time we filter, url will be changed accordingly wich means whenever user copies the url and shares to someone it'll get the persone who clicks on it to this exact filter page, thorugh getServerSideProps we built earlier. REMEMBER ? <br/>
+our getServerSideProps can handle query params so in cooperation with shallow route setting and query param parsing we can achieve great pre-rendering + client side data fetching functionlality.
+
+! HEY REMEMBER TO CHECH THE BACKEND IF YOU WANNA RUN THE APP
