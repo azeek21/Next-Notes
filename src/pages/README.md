@@ -880,3 +880,29 @@ Now every time we filter, url will be changed accordingly wich means whenever us
 our getServerSideProps can handle query params so in cooperation with shallow route setting and query param parsing we can achieve great pre-rendering + client side data fetching functionlality.
 
 ! HEY REMEMBER TO CHECH THE BACKEND IF YOU WANNA RUN THE APP
+
+
+# API routes
+* As NextJs is a full stack framework we can write not only front-end with ReactJs but also write APIs for our front end. We will use API routes feature of NextJs to create Restful APIs (rest api) for our front-end.
+* inside ```api``` folder inside ```./src/pages/``` folder we can define the APIs for our app, we can write bussiness logic using NodeJs. 
+* NextJs allows us to write full-stack ReactJs + NodeJs appilcations.
+
+
+## how to create api endpoints with NextJs
+1. Create ```api``` folder inside ```./src/pages/```.
+2. In ```api``` folder create your structure as you want and NextJs will treat file and folders inside ```api``` folder as routes for our api starting with ```/api``` as root. which means ```products.tsx``` file inside ```api``` folder will be mapped to ```example.com/api/products/```  <br/>
+<i>E.g: ```example.com/api/v1/``` will be mapped to ```./src/pages/api/v1/index.js``` file.</i>.
+
+3. export default handler function from your files that respond to requests. Name of the function HAS TO be "handler" and this function will be passed 2 arguments by default. Which are ``` req: NextApiRequest, res: NextApiResponse  ```. 
+4. send data you want from inside ```handler``` function with ``` res.status(200).json({data: "your data here"}) ```
+Example: <br/>
+our ```./src/api/v1/index.ts``` now looks like below and reponds to ```/api/v1``` route.
+```
+import { NextApiRequest, NextApiResponse } from "next";
+
+export default function handler(req: NextApiRequest, res: NextApiResponse) {
+    res.status(200).json({name: "Home API route endpoint for My api V1"});
+}
+
+```
+
