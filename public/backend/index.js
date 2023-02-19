@@ -82,6 +82,9 @@ var EVENTS = [
     },
 ];
 var FileterByCategory = function (news, category) {
+    if (category === "ALL") {
+        return news;
+    }
     if (category) {
         return news.filter(function (n) { return n.category === category; });
     }
@@ -102,7 +105,7 @@ app.get('/dashboard', function (req, res) {
 });
 app.get('/events', function (req, res) {
     setTimeout(function () {
-        res.send(EVENTS);
+        res.send(FileterByCategory(EVENTS, req.query.category));
     }, 1000);
 });
 app.listen(port, function () {

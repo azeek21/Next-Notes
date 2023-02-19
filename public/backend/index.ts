@@ -98,7 +98,10 @@ const EVENTS: EventType[] = [
 
 
 
-const FileterByCategory = (news: typeof NEWS, category: string) => {
+const FileterByCategory = (news: any, category: string) => {
+    if (category === "ALL") {
+        return news;
+    }
     if (category){
         return news.filter(n => n.category === category)
     }
@@ -130,7 +133,7 @@ app.get('/dashboard', (req: Request, res: Response) => {
 app.get('/events', (req: Request, res: Response) => {
 
     setTimeout(() => {
-        res.send(EVENTS)
+        res.send(FileterByCategory(EVENTS, req.query.category as string))
     }, 1000);
 })
 

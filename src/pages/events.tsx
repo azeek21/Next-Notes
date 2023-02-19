@@ -1,5 +1,5 @@
 import { useState } from "react";
-
+import useSWR from 'swr';
 
 type EventType = {
     id: string,
@@ -23,6 +23,7 @@ const Event = ({event}: {event: EventType}) => {
 
 export default function EventList({events}: {events: EventType[]}) {
     const [evs, setEvs] = useState(events);
+    const [loading, setLoading] = useState(false)
     let tmp: string[] = [];
 
     events.forEach(e => {
@@ -31,13 +32,14 @@ export default function EventList({events}: {events: EventType[]}) {
         }
     })
 
-    const filterBy = (category:  string) => {
-        if (category === "ALL") {
-            setEvs(events);
-        }
-        else {
-            setEvs(events.filter(e => e.category === category))
-        }
+    const filterBy = async (category: string) => {
+        setLoading(true)
+        const {error, data} = useSWR('events', async () => {
+            return await (await fetch("http://localhost:8000/events?category=" + category)).json();
+        })
+        // const data = await (await fetch("http://localhost:8000/events?category=" + category)).json();
+        setEvs(data)
+        setLoading(false)
     }
 
     const Buttons = tmp.map((c, i) => <button key={i} type="button" onClick={() => {filterBy(c)}} > {c} </button>)
@@ -48,9 +50,9 @@ export default function EventList({events}: {events: EventType[]}) {
             {Buttons}
             <h2>List of events: </h2>
             <div>
-
+            {loading && <h4>Loading ...</h4>}
             </div>
-            {evs &&
+            {(evs && !loading) &&
                 evs.map(e => <Event key={e.id} event={e} />)
             }
         </ul>
