@@ -9,7 +9,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
             const comment = COMMENTS.find((comment) => comment.id === +id)
             res.status(200).json(comment);
         } else {
-            res.status(404).send("NOT FOUND !")
+            res.status(404).send({id: 404, text: "NOT FOUND !"})
         }
     } else if ( req.method === "DELETE" ) {
         if (id) {

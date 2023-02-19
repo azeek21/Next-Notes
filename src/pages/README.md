@@ -972,3 +972,17 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
 * PATCH request are commonly used to UPDATE data in the backend/database/data source
 HOWTO: Logic is pretty similar to of DELETE request above as we need specific id and do some work on item with that id, updating (changing/mutating) in our case. <br/>
 SEE: ```./src/pages/comments/index.tsx``` and ```./src/pages/api/v1/comments/[id].tsx``` for examples.
+
+## Catch All routes
+* We might want (need) to handle multiple segment params in our route like ```example.com/api/comments/segment1/segment2/..../segmentN```
+* In such cases we migh use catch all routes. 
+* Refer to <a href="#catching-all-routes"> catch all routes </a> for more.
+
+HOWTO: just create a ```[...filename].ts``` or ```[[...filename]].ts``` file and parse all passed sengments/params from ```req.query.filename```.
+NOTE: ```req.query.filename``` will be an array of strings respectively one string for each query param.
+Example: for url that looks like this ```example.com/api/x1/x2/x3/x4``` a catchall routes file named ```[[...params]].ts``` will be supplied with a request object that contains this ``` ["x1","x2","x3","x4",]  ``` array in ```req.query.params``` <br/>
+
+Go see ```./src/pages/api/v1/comments/[...params].ts``` for a very simple example.
+
+
+NOTE: DON'T MAKE REQUEST TO YOUR OWN API ENDPOINTS INSIDE ```getStaticProps``` or ```getServerSideProps```. Use The actual data instead.
