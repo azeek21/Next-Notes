@@ -34,10 +34,7 @@ export default function EventList({events}: {events: EventType[]}) {
 
     const filterBy = async (category: string) => {
         setLoading(true)
-        const {error, data} = useSWR('events', async () => {
-            return await (await fetch("http://localhost:8000/events?category=" + category)).json();
-        })
-        // const data = await (await fetch("http://localhost:8000/events?category=" + category)).json();
+        const data = await (await fetch("http://localhost:8000/events?category=" + category)).json();
         setEvs(data)
         setLoading(false)
     }
