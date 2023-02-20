@@ -1267,3 +1267,31 @@ So to replicate above scenario we just need to write like below.
 }
 ```
 Now you can write ```import RedButton from "@/buttons/RedButton"``` instead of ```import RedButton from "src/components/styled/buttons/RedButton"```
+
+## export static HTML
+* You might need to export all your static html pages so that you can deploy them to a static server without needing to use NodeJs.
+* NOTE: Has many unsupported features. e.g: static exporting HTML doesn't support SSR and ISR, Image (optimized img component) is not supported, getStaticPaths fallback features not supported (except fallback: false) ...
+* NOTE: Exported pages are still in reactJs, so you can use all clien side related features like managing a state, data fetching, using hooks and so on...
+* Good for blogs and landing pages where content is not so dynamic and can be generated at build time. <br/>
+
+HOWTO: 
+1. Add script for nextJs to export your HTML
+    * in ```package.json``` att an entry of     ```"export": "next build && next export", inside "scirpts".
+EXAMPLE: ```./package.json```
+```
+{
+  "name": "next_tutorial",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "export": "next build && next export"
+  },
+  "dependencies": {
+    // all your dependencies here
+  },
+}
+```
