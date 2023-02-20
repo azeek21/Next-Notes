@@ -36,6 +36,9 @@ export default function Home() {
 
         <h3> This is SSR, page pointed by link below will be rendered at runtime after the request. </h3>
         <Link href={"/news"} >News -&gt;</Link>
+
+        <h3>API routes example: </h3>
+        <Link href={"./api/v1/comments"} >Comments -&gt;</Link>
         </div>
     )
 };
