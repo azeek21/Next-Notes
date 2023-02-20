@@ -1110,3 +1110,91 @@ const StyledTitle = styled.h1`
     font-style: italic;
 `
 ```
+
+# Misceleneous
+## App layout
+* in Nextjs App Layout is defined in ```./src/pages/_app.tsx/ts/js``` file. like a header at the top, and a footer at the bottom;
+Global layout example: ```./src/pages/_app.tsx```
+
+```
+
+import Footer from '@/components/footer/footer'
+import Header from '@/components/header/header'
+import '../styles/globals.css'
+import type { AppProps } from 'next/app'
+import {ThemeProvider} from 'styled-components'
+
+const theme = {
+  colors: {
+    primary: "white",
+    secondary: "purple"
+  }
+}
+
+export default function App({ Component, pageProps }: AppProps) {
+  return (
+    <ThemeProvider theme={theme}>
+      <Header />
+      <Component {...pageProps} />
+      <Footer />
+    </ThemeProvider>
+  )
+}
+```
+
+### per page layouts
+* Sometimes we might want to override global layor for a page like login or something. For this purpopse
+* we can use pre page layouts.
+HOW: <br/>
+1. Define a function in your page file. Which receives a a compoent which is the default exported file itslef in current file. and make a return statement with any custom layout you want and the  page argument received will render current page.
+2. Add it to default exported component that represents the page.
+3. in ```_app.js/ts/tsx/jsx``` check if a component has such funciton and use that function to render the page. <br/>
+
+EXAMPLE: ```./src/pages/profile.tsx```
+
+```
+import Footer from "@/components/footer/footer"
+
+export default function Profile() {
+
+    return (
+        <h1>Profile Page Here !</h1>
+    )
+};
+
+// this fucntion defines page custom layout, page parameter is the above defined page (component) itself
+Profile.getLayout =  (page: any)  => {
+    return (
+        <>
+        <h1>Custom per page layout used here</h1>
+        <p>THere's no header here, only footer.</p>
+        {page}
+        <Footer />
+        </>
+    )
+}
+```
+and in ```./src/pages/_app.tsx```
+
+```
+import Footer from '@/components/footer/footer'
+import Header from '@/components/header/header'
+
+export default function App({ Component, pageProps }: any) {
+
+    // check if page has custom layour and render that layout if exists
+    if (Component.getLayout) {
+      return Component.getLayout(<Component {...pageProps} />)
+    }
+
+    // else render global layout
+    return (
+        <>
+        <Header />
+        <Component {...pageProps} />
+        <Footer />
+        </>
+    )
+}
+```
+That's it, it just works like charm (magic). P.s: bad choice of workds :(

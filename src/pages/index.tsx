@@ -38,7 +38,10 @@ export default function Home() {
         <Link href={"/news"} >News -&gt;</Link>
 
         <h3>API routes example: </h3>
-        <Link href={"./api/v1/comments"} >Comments -&gt;</Link>
+        <Link href={"/api/v1/comments"} >Comments -&gt;</Link>
+
+        <h3>Page wit custom per page layout </h3>
+        <Link href={"/profile"} >Profile -&gt;</Link>
         </div>
     )
 };
