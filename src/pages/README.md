@@ -1058,3 +1058,55 @@ export default function Styled() {
 3. Import and use them, NextJs will take care of the rest. 
 NOTE: you might need to restart the app for installing sass to take effect.
 Examples: ```./src/styles/Scssed.module.scss``` and ```./src/pages/scssed.tsx```.
+
+## Css in JS solutions
+### inline styles
+
+* You just write your inline styles inside ```style={{}}``` props of a component as usual and it works. 
+
+### Styled Components
+* Using Themes: <br/>
+    You just import theme provider and use it to wrap returned component in normal react app inside ```./src/pages/_app.tsx``` file. Then anywhere in your app inside styled components you can do the usual ``` styled.h1`color: ${ ({theme}) => theme.colors.colorName };`  ```.
+* Using styled components <br/>
+    Same as normal react, ```import styled from 'stlyed-components'``` and you know the rest...
+Example: ```./src/pages/_app.tsx``` :arrow-down:
+
+```
+import '@/styles/globals.css'
+import type { AppProps } from 'next/app'
+import {ThemeProvider} from 'styled-components'
+
+const theme = {
+  colors: {
+    primary: "white",
+    secondary: "purple"
+  }
+}
+
+export default function App({ Component, pageProps }: AppProps) {
+  return (
+    <ThemeProvider theme={theme}> 
+      <Component {...pageProps} />
+    </ThemeProvider>
+  )
+}
+```
+
+```./src/pages/css-in-js.tsx``` :arrow-down:
+
+```
+import styled from "styled-components"
+
+export default function CssInJs() {
+
+    return (
+            <StyledTitle>I am this way cus I am styled with Styled components with theme provider.</StyledTitle>
+    )
+    
+}
+
+const StyledTitle = styled.h1`
+    color: ${({theme}) => theme.colors.secondary};
+    font-style: italic;
+`
+```
