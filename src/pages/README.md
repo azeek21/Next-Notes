@@ -1224,3 +1224,8 @@ export default function About() {
 }
 ```
 Also take a loot at ```./src/pages/_app.tsx``` to see my implementation of Head component.
+
+## Image component
+* Images play a irreplacable role in our web apps. And it's pretty common to see different ways of optimizing these images for web apps as they can really affect the performance of our app if implemented incorrectly.
+* Image compoent is same as img element but it optimizes images for web according to width and height provided and
+* Image can provide low quality placeholders wich help us serve temporary placeholders for better UX and keeping page sturcture as it is. 

@@ -40,8 +40,11 @@ export default function Home() {
         <h3>API routes example: </h3>
         <Link href={"/api/v1/comments"} >Comments -&gt;</Link>
 
-        <h3>Page wit custom per page layout </h3>
+        <h3>Page with custom per page layout </h3>
         <Link href={"/profile"} >Profile -&gt;</Link>
+
+        <h3>Page with optimized images with Image from next/image</h3>
+        <Link href={"./gallery"} >Gallery -&gy;</Link>
         </div>
     )
 };
