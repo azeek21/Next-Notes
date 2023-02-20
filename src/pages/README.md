@@ -1052,3 +1052,9 @@ export default function Styled() {
 ```
 
 
+## using sass
+1. Install sass by ```npm install sass``` or ```yarn add sass```
+2. Create your style files in ```./src/styles``` folder like you would with pure css. 
+3. Import and use them, NextJs will take care of the rest. 
+NOTE: you might need to restart the app for installing sass to take effect.
+Examples: ```./src/styles/Scssed.module.scss``` and ```./src/pages/scssed.tsx```.
