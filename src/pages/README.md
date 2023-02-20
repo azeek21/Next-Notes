@@ -1295,3 +1295,16 @@ EXAMPLE: ```./package.json```
   },
 }
 ```
+
+## Adding typescript
+* Typescript is just awesome. I love it. At first it might seem difficult or confusing but once you get to know it, you'll never go back to plain js I think. As I have background in staticly typed languages like C and C++, picking up Ts was not so hard and here's how you can add typescript to your nextjs app. <br/>
+
+HOWTO: Just add a ```tsconfig.json``` file and at the root of your application and run ```yarn dev``` or ```npm dev``` if you are using npm. Them NextJs tells you what packages you need to install in order to get TypeScript working. Don't worry, NextJs supports TypeScript very well, but there's just a little bit of package installation needed by you. go ahead and istall packages asked by NextJs. In my case, as I am already using a TypeScript based project from the beginning, I can't replicate that but for you it's going to be some packages like ```typescript``` and ```@tpyes/react```. Go ahead and install these 2 packages and run ```yarn dev``` again. Voalia :cool: . You are done. Now you can write typescript anywhere and nextJs will take care of the rest. You might want to tweak default settings in ```tsconfig.json```, things like baseUrl, path aliases and many more... <br/>
+
+1. Install ```typescript``` and ```@types/react``` with ```npm install -D``` or ```yarn add --dev``` if you are using yarn.
+2. Create a file named ```tsconfig.json``` in root of your app.
+3. run ```yarn dev``` or ```npm dev``` if you are using npm.
+You are DONE, NextJs will take care of the res.
+4. BUT, you might want to change some settings in ```tsconfig.json```, now this file has been generated and filled by NextJs, you can go agead and change these settings according to your liking. Things like baseUrl and path aliases. <br/>
+
+NOTE: if you have sttings, MOVE ```jsconfig.json``` INTO ```tsconfig.json``` as NOW ```tsconfig.json``` IS DEFAULT SETTINGS FILE.
