@@ -1198,3 +1198,29 @@ export default function App({ Component, pageProps }: any) {
 }
 ```
 That's it, it just works like charm (magic). P.s: bad choice of workds :(
+
+## Head component
+* The default head component is not good enough for production apps as it lacks dynamic title, good description and many more.
+* To solve this we use Head component from `next/head` package.
+* Head tag is used just like a Head element from pure Html <br/>
+* Elements inside Head component gets merged into actual head tag. Same elements will be overwritten by similar tags inside Head. Order of overwriting is: deeper Heads have more priority.
+* To avoit hassle of adding a Head to every other page, we can just add one Head to the base ```./src/pages/_app.tsx```.
+* As Head is just a JSX afterall, we can make them dynamic depending on the content which is great for SEO and UX.
+
+Example: ```./src/pages/about.tsx```
+```
+import Head from "next/head"
+
+export default function About() {
+    return (
+        <>
+            <Head>
+                <title>About my app</title>
+                <meta name="description" content="This page is great for SEO and has dynamic title and head" />
+            </Head>
+            <h1> Special page with Head component </h1>
+        </>
+        )
+}
+```
+Also take a loot at ```./src/pages/_app.tsx``` to see my implementation of Head component.
