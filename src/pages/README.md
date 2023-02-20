@@ -1229,3 +1229,41 @@ Also take a loot at ```./src/pages/_app.tsx``` to see my implementation of Head 
 * Images play a irreplacable role in our web apps. And it's pretty common to see different ways of optimizing these images for web apps as they can really affect the performance of our app if implemented incorrectly.
 * Image compoent is same as img element but it optimizes images for web according to width and height provided and
 * Image can provide low quality placeholders wich help us serve temporary placeholders for better UX and keeping page sturcture as it is. 
+
+## Module path aliases
+
+### Absolute paths
+* relative paths can get confusing when used a lot and with tons of nested paths.
+* We need absolute paths to solve this issue. <br/>
+
+HOW: 
+1. create ```jsonfig.json``` if you are using JavaScript or ```tsconfig.json``` if you are using TypeScript at the root of your app. (in the same folder as next.config.js and package.json are stored)
+2. create an object (```{}```) and add ```compilerOptions``` object to it and add ```baseUrl: "."``` to the compilerOptions object. <br/>
+This tells NextJs that the base which our paths start is this directory which ```tsconfig.json``` is saved at. <br/>
+Now you can just write ```"src/components/component.tsx"``` and it refers to ```/home/your_username/other/paths/to/your/app/your_app_name/src/components/component.tsx```. :cool: right ?
+
+now your ```tsconfig.json``` file should look like this :arrow-down:
+```
+{
+    "compilerOptions": {
+        "baseUrl": "."
+    }
+}
+```
+### aliases
+* you can make an alias to replace a path. Wich means if you alias, let's say, the ```./src/components/styled/buttons/*``` folder to something like ```@/buttons/``` it would be much easier to use this path during imports right ? so how we do it? <br/>
+HOW:
+1. ```compilerOptions``` object has another propery called ```paths``` wich itself is an object of ```alias: actualPath``` key - value pairs.
+So to replicate above scenario we just need to write like below.
+
+```
+{
+    "compilerOptions": {
+        "baseUrl": ".",
+        "paths": {
+            "@/buttons/*: ["src/components/styled/buttons/*"]
+        }
+    }
+}
+```
+Now you can write ```import RedButton from "@/buttons/RedButton"``` instead of ```import RedButton from "src/components/styled/buttons/RedButton"```
