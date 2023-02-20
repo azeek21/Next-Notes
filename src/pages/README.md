@@ -1110,3 +1110,201 @@ const StyledTitle = styled.h1`
     font-style: italic;
 `
 ```
+
+# Misceleneous
+## App layout
+* in Nextjs App Layout is defined in ```./src/pages/_app.tsx/ts/js``` file. like a header at the top, and a footer at the bottom;
+Global layout example: ```./src/pages/_app.tsx```
+
+```
+
+import Footer from '@/components/footer/footer'
+import Header from '@/components/header/header'
+import '../styles/globals.css'
+import type { AppProps } from 'next/app'
+import {ThemeProvider} from 'styled-components'
+
+const theme = {
+  colors: {
+    primary: "white",
+    secondary: "purple"
+  }
+}
+
+export default function App({ Component, pageProps }: AppProps) {
+  return (
+    <ThemeProvider theme={theme}>
+      <Header />
+      <Component {...pageProps} />
+      <Footer />
+    </ThemeProvider>
+  )
+}
+```
+
+### per page layouts
+* Sometimes we might want to override global layor for a page like login or something. For this purpopse
+* we can use pre page layouts.
+HOW: <br/>
+1. Define a function in your page file. Which receives a a compoent which is the default exported file itslef in current file. and make a return statement with any custom layout you want and the  page argument received will render current page.
+2. Add it to default exported component that represents the page.
+3. in ```_app.js/ts/tsx/jsx``` check if a component has such funciton and use that function to render the page. <br/>
+
+EXAMPLE: ```./src/pages/profile.tsx```
+
+```
+import Footer from "@/components/footer/footer"
+
+export default function Profile() {
+
+    return (
+        <h1>Profile Page Here !</h1>
+    )
+};
+
+// this fucntion defines page custom layout, page parameter is the above defined page (component) itself
+Profile.getLayout =  (page: any)  => {
+    return (
+        <>
+        <h1>Custom per page layout used here</h1>
+        <p>THere's no header here, only footer.</p>
+        {page}
+        <Footer />
+        </>
+    )
+}
+```
+and in ```./src/pages/_app.tsx```
+
+```
+import Footer from '@/components/footer/footer'
+import Header from '@/components/header/header'
+
+export default function App({ Component, pageProps }: any) {
+
+    // check if page has custom layour and render that layout if exists
+    if (Component.getLayout) {
+      return Component.getLayout(<Component {...pageProps} />)
+    }
+
+    // else render global layout
+    return (
+        <>
+        <Header />
+        <Component {...pageProps} />
+        <Footer />
+        </>
+    )
+}
+```
+That's it, it just works like charm (magic). P.s: bad choice of workds :(
+
+## Head component
+* The default head component is not good enough for production apps as it lacks dynamic title, good description and many more.
+* To solve this we use Head component from `next/head` package.
+* Head tag is used just like a Head element from pure Html <br/>
+* Elements inside Head component gets merged into actual head tag. Same elements will be overwritten by similar tags inside Head. Order of overwriting is: deeper Heads have more priority.
+* To avoit hassle of adding a Head to every other page, we can just add one Head to the base ```./src/pages/_app.tsx```.
+* As Head is just a JSX afterall, we can make them dynamic depending on the content which is great for SEO and UX.
+
+Example: ```./src/pages/about.tsx```
+```
+import Head from "next/head"
+
+export default function About() {
+    return (
+        <>
+            <Head>
+                <title>About my app</title>
+                <meta name="description" content="This page is great for SEO and has dynamic title and head" />
+            </Head>
+            <h1> Special page with Head component </h1>
+        </>
+        )
+}
+```
+Also take a loot at ```./src/pages/_app.tsx``` to see my implementation of Head component.
+
+## Image component
+* Images play a irreplacable role in our web apps. And it's pretty common to see different ways of optimizing these images for web apps as they can really affect the performance of our app if implemented incorrectly.
+* Image compoent is same as img element but it optimizes images for web according to width and height provided and
+* Image can provide low quality placeholders wich help us serve temporary placeholders for better UX and keeping page sturcture as it is. 
+
+## Module path aliases
+
+### Absolute paths
+* relative paths can get confusing when used a lot and with tons of nested paths.
+* We need absolute paths to solve this issue. <br/>
+
+HOW: 
+1. create ```jsonfig.json``` if you are using JavaScript or ```tsconfig.json``` if you are using TypeScript at the root of your app. (in the same folder as next.config.js and package.json are stored)
+2. create an object (```{}```) and add ```compilerOptions``` object to it and add ```baseUrl: "."``` to the compilerOptions object. <br/>
+This tells NextJs that the base which our paths start is this directory which ```tsconfig.json``` is saved at. <br/>
+Now you can just write ```"src/components/component.tsx"``` and it refers to ```/home/your_username/other/paths/to/your/app/your_app_name/src/components/component.tsx```. :cool: right ?
+
+now your ```tsconfig.json``` file should look like this :arrow-down:
+```
+{
+    "compilerOptions": {
+        "baseUrl": "."
+    }
+}
+```
+### aliases
+* you can make an alias to replace a path. Wich means if you alias, let's say, the ```./src/components/styled/buttons/*``` folder to something like ```@/buttons/``` it would be much easier to use this path during imports right ? so how we do it? <br/>
+HOW:
+1. ```compilerOptions``` object has another propery called ```paths``` wich itself is an object of ```alias: actualPath``` key - value pairs.
+So to replicate above scenario we just need to write like below.
+
+```
+{
+    "compilerOptions": {
+        "baseUrl": ".",
+        "paths": {
+            "@/buttons/*: ["src/components/styled/buttons/*"]
+        }
+    }
+}
+```
+Now you can write ```import RedButton from "@/buttons/RedButton"``` instead of ```import RedButton from "src/components/styled/buttons/RedButton"```
+
+## export static HTML
+* You might need to export all your static html pages so that you can deploy them to a static server without needing to use NodeJs.
+* NOTE: Has many unsupported features. e.g: static exporting HTML doesn't support SSR and ISR, Image (optimized img component) is not supported, getStaticPaths fallback features not supported (except fallback: false) ...
+* NOTE: Exported pages are still in reactJs, so you can use all clien side related features like managing a state, data fetching, using hooks and so on...
+* Good for blogs and landing pages where content is not so dynamic and can be generated at build time. <br/>
+
+HOWTO: 
+1. Add script for nextJs to export your HTML
+    * in ```package.json``` att an entry of     ```"export": "next build && next export", inside "scirpts".
+EXAMPLE: ```./package.json```
+```
+{
+  "name": "next_tutorial",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "export": "next build && next export"
+  },
+  "dependencies": {
+    // all your dependencies here
+  },
+}
+```
+
+## Adding typescript
+* Typescript is just awesome. I love it. At first it might seem difficult or confusing but once you get to know it, you'll never go back to plain js I think. As I have background in staticly typed languages like C and C++, picking up Ts was not so hard and here's how you can add typescript to your nextjs app. <br/>
+
+HOWTO: Just add a ```tsconfig.json``` file and at the root of your application and run ```yarn dev``` or ```npm dev``` if you are using npm. Them NextJs tells you what packages you need to install in order to get TypeScript working. Don't worry, NextJs supports TypeScript very well, but there's just a little bit of package installation needed by you. go ahead and istall packages asked by NextJs. In my case, as I am already using a TypeScript based project from the beginning, I can't replicate that but for you it's going to be some packages like ```typescript``` and ```@tpyes/react```. Go ahead and install these 2 packages and run ```yarn dev``` again. Voalia :cool: . You are done. Now you can write typescript anywhere and nextJs will take care of the rest. You might want to tweak default settings in ```tsconfig.json```, things like baseUrl, path aliases and many more... <br/>
+
+1. Install ```typescript``` and ```@types/react``` with ```npm install -D``` or ```yarn add --dev``` if you are using yarn.
+2. Create a file named ```tsconfig.json``` in root of your app.
+3. run ```yarn dev``` or ```npm dev``` if you are using npm.
+You are DONE, NextJs will take care of the res.
+4. BUT, you might want to change some settings in ```tsconfig.json```, now this file has been generated and filled by NextJs, you can go agead and change these settings according to your liking. Things like baseUrl and path aliases. <br/>
+
+NOTE: if you have sttings, MOVE ```jsconfig.json``` INTO ```tsconfig.json``` as NOW ```tsconfig.json``` IS DEFAULT SETTINGS FILE.

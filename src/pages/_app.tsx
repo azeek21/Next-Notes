@@ -1,6 +1,8 @@
-import '@/styles/globals.css'
-import type { AppProps } from 'next/app'
+import Footer from '@/components/footer/footer'
+import Header from '@/components/header/header'
+import '../styles/globals.css'
 import {ThemeProvider} from 'styled-components'
+import Head from 'next/head'
 
 const theme = {
   colors: {
@@ -9,10 +11,21 @@ const theme = {
   }
 }
 
-export default function App({ Component, pageProps }: AppProps) {
+export default function App({ Component, pageProps }: any) {
+
+    if (Component.getLayout) {
+      return Component.getLayout(<Component {...pageProps} />)
+    }
+
   return (
-    <ThemeProvider theme={theme}> 
+    <ThemeProvider theme={theme}>
+      <Head>
+        <title>Learning NextJs</title>
+        <meta name="description" content='All my walkthrough learning NextJs is here. Learn nextJs. NextJs walktrhough.' />
+      </Head>
+      <Header />
       <Component {...pageProps} />
+      <Footer />
     </ThemeProvider>
   )
 }
