@@ -986,3 +986,69 @@ Go see ```./src/pages/api/v1/comments/[...params].ts``` for a very simple exampl
 
 
 NOTE: DON'T MAKE REQUEST TO YOUR OWN API ENDPOINTS INSIDE ```getStaticProps``` or ```getServerSideProps```. Use The actual data instead.
+
+# styling
+## global styles
+* The most importan thing to add a global style is to import the stylesheet in ```./src/pages/_app.tsx/js/jsx```. Stylesheet file will be imported and added by NextJs.
+* There's already a automatic generated global styles file in ```./src/styles/globals.css```. and it is imported in _app.tsx if you look closee.
+* To add styles from libraries like bootstrap, you again need to just import the stylesheet file in ```_app.tsx``` and it'll be available gobally. You can use bootstrap classes anywhere in your app and it'll be styled according to bootsrap stylesheet definitions.
+
+## component level styling
+* NextJs has a strict styling convention for component level styling. 
+* You need to create a ```filename.module.css``` file for respective ```filename.tsx``` file.
+* WARN: ```.mudle.css``` convention is important, it tells NextJs that this is css file.
+HOWTO: to use a ```filename.module.css``` in ```filename.tsx``` file first you need to import the css stylesheet file as a variable. (```import styles from "./src/styles/filename.module.css"```) Then to use css selector names as a child of variable object we imported.
+
+* NOTE: you must use pure selectors (classes or id) in module.css files.
+
+* By using ```stlyeobject.selector``` convention for component level styling, NextJs helps to avoid namig collisions, which means you can use same selector names inside two different css modules with different styled, and nextJs makes sure each component only get's the style that's inteded for it by handling your selector names in a different way.
+    - Run the app and go to ```http://localhost:3000/styled```, inspect the dom and you can see the class selector names have been changed by NextJs in comparison to the ones in ```./src/styles/styled.module.css```. Great isn't it :smile:
+Example:
+```./src/pages/styled.tsx``` :arrow-down:
+
+```
+import style from "../styles/styled.module.css"
+
+export default function Styled() {
+    return (
+        <div className={style.fullscreen}>
+            <h3 >Just a stlyed page to show how component level styling works</h3>
+            <div className={style.animated} ></div>
+        </div>
+    )
+}
+```
+
+```./src/styled/styled.module.css``` :arrow-down:
+
+```
+
+.red {
+    color: rgba(255, 0, 0, 0.5);
+}
+
+.animated {
+    border: .5rem dotted white;
+    animation: rotater 5s ease-in-out infinite;
+    width: 30%;
+    margin: auto;
+    display: block;
+    border-radius: 50%;
+    aspect-ratio: 1 / 1;
+}
+
+@keyframes rotater{
+    0% {
+        transform: scale(1) rotateZ(0deg);
+    }
+    50% {
+        transform: scale(1.3) rotateZ(180deg);
+    }
+    100% {
+        transform: rotateZ(360deg) scale(1);
+    }
+}
+
+```
+
+
