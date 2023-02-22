@@ -1308,3 +1308,76 @@ You are DONE, NextJs will take care of the res.
 4. BUT, you might want to change some settings in ```tsconfig.json```, now this file has been generated and filled by NextJs, you can go agead and change these settings according to your liking. Things like baseUrl and path aliases. <br/>
 
 NOTE: if you have sttings, MOVE ```jsconfig.json``` INTO ```tsconfig.json``` as NOW ```tsconfig.json``` IS DEFAULT SETTINGS FILE.
+
+## Preview mode
+* Enables you to call getStaticProps on every request after build. Which can be very useful to preview pages on real production server and test them
+* You can enable and disable preview mode
+* You can change the behaviour of the page depending on the mode, if behaviour mode you can fetch data from a different endpoint for example
+HOWTO:
+1. Preview mode is enabled by making a request to one of our api endpoints inside ```./src/pages/api/``` folder
+2. This request sets some cookies and redirects us to the needed page so then every request from that page triggers preview mode according to these cookies
+3. In getStaticProps we can check current mode with according to ```context.preview``` wich is a boolean.
+4. We can even return special data for preview mode to context from api handler wich means we can acces it in getStaticProps like this: ```context.previewData```
+CODE: `./src/pages/api/v1/preview/index.ts` :arrow-down:
+```
+import { NextApiRequest, NextApiResponse } from "next";
+
+// this set's the cookies and enables preview mode;
+export default function handler (req: NextApiRequest, res: NextApiResponse) {
+
+    // this next line is actually responsible for enabling preview mode, you can give it an empty  object as param if you dont need data. But preview mode will not be enabled without this.
+    res.setPreviewData({user: "Azeek"})
+
+    if (typeof(req.query.redirect) == "string") {
+        res.redirect(req.query.redirect)
+    } else {
+        res.end("No redirect found...")
+    }
+}
+```
+
+`./src/pages/api/v1/preview/index.ts` :arrow-down:
+```
+import { NextApiRequest, NextApiResponse } from "next";
+
+// this disables preview mode
+export default function handler( req: NextApiRequest, res: NextApiResponse ) {
+    res.clearPreviewData();
+    res.end("Preview mode disabled.");
+}
+```
+then in `./src/pages/preview-mode.tsx` :arrow-down:
+```
+import { GetStaticPropsContext } from "next"
+
+export default ({msg}: {msg: string}) => {
+
+    return (
+        <div>
+            <h1>Preview mode page</h1>
+            <h2>{msg}</h2>
+        </div>
+    )
+}
+
+export async function getStaticProps(context: GetStaticPropsContext) {
+
+    // context.preview will be true if preview mode enabled so you can do something different and return different props
+    if ( context.preview ) {
+        // this will fetch every time in preview mode if page is build and in prod
+        const data = await (await fetch("http://localhost:8000/dashboard")).json()
+        return {
+            props: {
+                msg: "Preview mode enabled",
+            }
+        }
+    }
+
+    return {
+        props: {
+            msg: "Normal page for preview mode ..."
+        }
+    }
+}
+```
+Now if you run the app and go to ```http://localhost:3000/api/v1/preview?redirect=/preview-mode``` preview mode will be enabled and you will be redirected to ```http://localhost:3000/preview-mode``` but with different data as we are returning different msg from getStaticProps if preview mode enabled. Now you can refresh the page and test the page as much as you want and on every refresh getStaticProps will be called in the server and page will be regenerated as it's working in SSR mode. To disable preview mode just go to ```http://localhost:3000/api/v1/preview/disable``` and go back to your page, now it's disabled.

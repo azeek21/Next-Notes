@@ -94,6 +94,7 @@ app.get('/news', function (req, res) {
     res.send(FileterByCategory(NEWS, req.query.category));
 });
 app.get('/dashboard', function (req, res) {
+    console.log("Dashboard requested ...");
     setTimeout(function () {
         res.send({
             likes: 11,
