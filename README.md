@@ -1004,7 +1004,7 @@ HOWTO: to use a ```filename.module.css``` in ```filename.tsx``` file first you n
 * By using ```stlyeobject.selector``` convention for component level styling, NextJs helps to avoid namig collisions, which means you can use same selector names inside two different css modules with different styled, and nextJs makes sure each component only get's the style that's inteded for it by handling your selector names in a different way.
     - Run the app and go to ```http://localhost:3000/styled```, inspect the dom and you can see the class selector names have been changed by NextJs in comparison to the ones in ```./src/styles/styled.module.css```. Great isn't it :smile:
 Example:
-```./src/pages/styled.tsx``` :arrow-down:
+```./src/pages/styled.tsx``` :arrow_down:
 
 ```
 import style from "../styles/styled.module.css"
@@ -1019,7 +1019,7 @@ export default function Styled() {
 }
 ```
 
-```./src/styled/styled.module.css``` :arrow-down:
+```./src/styled/styled.module.css``` :arrow_down:
 
 ```
 
@@ -1069,7 +1069,7 @@ Examples: ```./src/styles/Scssed.module.scss``` and ```./src/pages/scssed.tsx```
     You just import theme provider and use it to wrap returned component in normal react app inside ```./src/pages/_app.tsx``` file. Then anywhere in your app inside styled components you can do the usual ``` styled.h1`color: ${ ({theme}) => theme.colors.colorName };`  ```.
 * Using styled components <br/>
     Same as normal react, ```import styled from 'stlyed-components'``` and you know the rest...
-Example: ```./src/pages/_app.tsx``` :arrow-down:
+Example: ```./src/pages/_app.tsx``` :arrow_down:
 
 ```
 import '@/styles/globals.css'
@@ -1092,7 +1092,7 @@ export default function App({ Component, pageProps }: AppProps) {
 }
 ```
 
-```./src/pages/css-in-js.tsx``` :arrow-down:
+```./src/pages/css-in-js.tsx``` :arrow_down:
 
 ```
 import styled from "styled-components"
@@ -1242,7 +1242,7 @@ HOW:
 This tells NextJs that the base which our paths start is this directory which ```tsconfig.json``` is saved at. <br/>
 Now you can just write ```"src/components/component.tsx"``` and it refers to ```/home/your_username/other/paths/to/your/app/your_app_name/src/components/component.tsx```. :cool: right ?
 
-now your ```tsconfig.json``` file should look like this :arrow-down:
+now your ```tsconfig.json``` file should look like this :arrow_down:
 ```
 {
     "compilerOptions": {
@@ -1318,7 +1318,7 @@ HOWTO:
 2. This request sets some cookies and redirects us to the needed page so then every request from that page triggers preview mode according to these cookies
 3. In getStaticProps we can check current mode with according to ```context.preview``` wich is a boolean.
 4. We can even return special data for preview mode to context from api handler wich means we can acces it in getStaticProps like this: ```context.previewData```
-CODE: `./src/pages/api/v1/preview/index.ts` :arrow-down:
+CODE: `./src/pages/api/v1/preview/index.ts` :arrow_down:
 ```
 import { NextApiRequest, NextApiResponse } from "next";
 
@@ -1336,7 +1336,7 @@ export default function handler (req: NextApiRequest, res: NextApiResponse) {
 }
 ```
 
-`./src/pages/api/v1/preview/index.ts` :arrow-down:
+`./src/pages/api/v1/preview/index.ts` :arrow_down:
 ```
 import { NextApiRequest, NextApiResponse } from "next";
 
@@ -1346,7 +1346,7 @@ export default function handler( req: NextApiRequest, res: NextApiResponse ) {
     res.end("Preview mode disabled.");
 }
 ```
-then in `./src/pages/preview-mode.tsx` :arrow-down:
+then in `./src/pages/preview-mode.tsx` :arrow_down:
 ```
 import { GetStaticPropsContext } from "next"
 
@@ -1389,7 +1389,7 @@ Now if you run the app and go to ```http://localhost:3000/api/v1/preview?redirec
 * It's very simple to set up redirects with nextJs. <br/>
 HOWTO: 
 1. in `./next.config.js` add below lines
-`./next.config.js` :arrow-down:
+`./next.config.js` :arrow_down:
 ```
 module.exports = {
     reactStrictMode = true,
