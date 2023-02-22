@@ -1308,3 +1308,162 @@ You are DONE, NextJs will take care of the res.
 4. BUT, you might want to change some settings in ```tsconfig.json```, now this file has been generated and filled by NextJs, you can go agead and change these settings according to your liking. Things like baseUrl and path aliases. <br/>
 
 NOTE: if you have sttings, MOVE ```jsconfig.json``` INTO ```tsconfig.json``` as NOW ```tsconfig.json``` IS DEFAULT SETTINGS FILE.
+
+## Preview mode
+* Enables you to call getStaticProps on every request after build. Which can be very useful to preview pages on real production server and test them
+* You can enable and disable preview mode
+* You can change the behaviour of the page depending on the mode, if behaviour mode you can fetch data from a different endpoint for example
+HOWTO:
+1. Preview mode is enabled by making a request to one of our api endpoints inside ```./src/pages/api/``` folder
+2. This request sets some cookies and redirects us to the needed page so then every request from that page triggers preview mode according to these cookies
+3. In getStaticProps we can check current mode with according to ```context.preview``` wich is a boolean.
+4. We can even return special data for preview mode to context from api handler wich means we can acces it in getStaticProps like this: ```context.previewData```
+CODE: `./src/pages/api/v1/preview/index.ts` :arrow-down:
+```
+import { NextApiRequest, NextApiResponse } from "next";
+
+// this set's the cookies and enables preview mode;
+export default function handler (req: NextApiRequest, res: NextApiResponse) {
+
+    // this next line is actually responsible for enabling preview mode, you can give it an empty  object as param if you dont need data. But preview mode will not be enabled without this.
+    res.setPreviewData({user: "Azeek"})
+
+    if (typeof(req.query.redirect) == "string") {
+        res.redirect(req.query.redirect)
+    } else {
+        res.end("No redirect found...")
+    }
+}
+```
+
+`./src/pages/api/v1/preview/index.ts` :arrow-down:
+```
+import { NextApiRequest, NextApiResponse } from "next";
+
+// this disables preview mode
+export default function handler( req: NextApiRequest, res: NextApiResponse ) {
+    res.clearPreviewData();
+    res.end("Preview mode disabled.");
+}
+```
+then in `./src/pages/preview-mode.tsx` :arrow-down:
+```
+import { GetStaticPropsContext } from "next"
+
+export default ({msg}: {msg: string}) => {
+
+    return (
+        <div>
+            <h1>Preview mode page</h1>
+            <h2>{msg}</h2>
+        </div>
+    )
+}
+
+export async function getStaticProps(context: GetStaticPropsContext) {
+
+    // context.preview will be true if preview mode enabled so you can do something different and return different props
+    if ( context.preview ) {
+        // this will fetch every time in preview mode if page is build and in prod
+        const data = await (await fetch("http://localhost:8000/dashboard")).json()
+        return {
+            props: {
+                msg: "Preview mode enabled",
+            }
+        }
+    }
+
+    return {
+        props: {
+            msg: "Normal page for preview mode ..."
+        }
+    }
+}
+```
+Now if you run the app and go to ```http://localhost:3000/api/v1/preview?redirect=/preview-mode``` preview mode will be enabled and you will be redirected to ```http://localhost:3000/preview-mode``` but with different data as we are returning different msg from getStaticProps if preview mode enabled. Now you can refresh the page and test the page as much as you want and on every refresh getStaticProps will be called in the server and page will be regenerated as it's working in SSR mode. To disable preview mode just go to ```http://localhost:3000/api/v1/preview/disable``` and go back to your page, now it's disabled.
+
+## Redirecting
+* Useful when re organizing website and urls are changed or maybe, site is in maintanance and we want temporarily redirect users to another page.
+* If user has saved an old url to your site and tries to use it, redirects can be very useful, aslo for cached search engines too.
+* As redirecting happens on the server, there will not be any content flash or glitches visible to the user.
+* It's very simple to set up redirects with nextJs. <br/>
+HOWTO: 
+1. in `./next.config.js` add below lines
+`./next.config.js` :arrow-down:
+```
+module.exports = {
+    reactStrictMode = true,
+    redirects: asnyc () => {
+        return [
+            {
+                source: './about',
+                destination: '/',
+                permanent: 'true' 
+            },
+        ]
+    }
+}
+```
+That's it :smile: <br/>
+Explanation: the above ```redirects: async () {}``` is a must and it has to return an array of object with these three attributes -> `source, destination, premanent`
+* source : string -> relative url of the page which needs to be users redirected from
+* destination: string -> relative url of the page which source url needs to be redirected to
+* permanent: bool -> if change is permanent or temporary.
+
+
+NOTE: `permanent: true` redturns an response status of `308` which tells search engines to stop using this url and save the redirected new one and <br/>
+`permanent: false` returns response satatus code of `307` which tells page is under maintainance and will be back soon so that crawlers check for this url every time and they will not drop it.
+BE CAREFUL while setting `permanent: true` or `permanent: false`
+
+NOTE: After changing any settings or config files it's a good idea to restart the dev server :smile:
+THere's a lot more to topic of redirecting, please learn more at <a href="https://nextjs.org/docs/api-reference/next.config.js/redirects"> NextJs redirects documentation </a>
+
+## Enviroment variables
+* For security and convinience reasons we need enviroment variables in our apps. and nextjs has awesome support for that. <br/>
+
+HOWTO:
+1. Create file called `.env.local` (HAS TO BE WRITTEN LIKE THIS) in the root folder of your app.
+2. format: `key=value` Write your tokens, api keys, secrets, anything you want to hide from outer world.
+3. read from env file with `process.env`.
+
+NOTE: `process.env` is only supported in nodejs enviroment (server code) and not usable in client side code (directly inside components).
+NOTE: all the code you write inside components will be shipped to client (browser) and code not included in Components are supposed to be server (node) code.
+
+!!! BUT if you really want to ship values from .env to browser you have to start the name of your variable with `NEXT_PUBLIC_` in .env file.
+For example if I want a variable named `MISS_YOU` i have to write like `NEXT_PUBLIC_MISS_YOU = "I do miss you though."`
+
+If you need env variable anywhere other than client side, you don't have to use `NEXT_PUBLIC_` it's only mandatory for client side var shipping.
+
+EXAMPLE: `./.env.local`
+```
+DB_NAME = "AZEEK"
+DB_GITHUB = "https://github.com/azeek21/"
+NEXT_PUBLIC_MISS_YOU = "I miss you..."
+```
+In `./src/pages/env.tsx`
+```
+export default ({env}: {env: {DB_NAME: string, DB_GITHUB: string}}) => {
+    return (
+        <>
+        <h3>Below are read from .env files in the server inside getServerSideProps()</h3>
+            <p>{env.DB_NAME}</p>
+            <a href={env.DB_GITHUB}>My github page here ...</a>
+            <p>Below line is read from publick env variable </p>
+            <p>{process.env.NEXT_PUBLIC_MISS_YOU}</p>
+        </>
+    )
+}
+
+export async function getServerSideProps() {
+
+    const env = {...process.env};
+    return {
+        props: {
+            env: env
+        }
+    }
+}
+```
+
+NOTE: .env.local is ignored by git in .gitignore file. If you work on open source and want to ship an example on how to set up necessary env variables. you can use something like `example.env.local` and write a descriptive `key=description` pairs. <br/>
+Example: `./example.env.local`

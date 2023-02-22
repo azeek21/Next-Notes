@@ -117,7 +117,8 @@ app.get('/news', (req: Request, res: Response) => {
 })
 
 app.get('/dashboard', (req: Request, res: Response) => {
-
+    console.log("Dashboard requested ...");
+    
     setTimeout(() => {
         res.send(
             {
