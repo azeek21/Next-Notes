@@ -1464,3 +1464,6 @@ export async function getServerSideProps() {
     }
 }
 ```
+
+NOTE: .env.local is ignored by git in .gitignore file. If you work on open source and want to ship an example on how to set up necessary env variables. you can use something like `example.env.local` and write a descriptive `key=description` pairs. <br/>
+Example: `./example.env.local`
