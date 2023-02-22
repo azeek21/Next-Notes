@@ -1417,3 +1417,50 @@ BE CAREFUL while setting `permanent: true` or `permanent: false`
 
 NOTE: After changing any settings or config files it's a good idea to restart the dev server :smile:
 THere's a lot more to topic of redirecting, please learn more at <a href="https://nextjs.org/docs/api-reference/next.config.js/redirects"> NextJs redirects documentation </a>
+
+## Enviroment variables
+* For security and convinience reasons we need enviroment variables in our apps. and nextjs has awesome support for that. <br/>
+
+HOWTO:
+1. Create file called `.env.local` (HAS TO BE WRITTEN LIKE THIS) in the root folder of your app.
+2. format: `key=value` Write your tokens, api keys, secrets, anything you want to hide from outer world.
+3. read from env file with `process.env`.
+
+NOTE: `process.env` is only supported in nodejs enviroment (server code) and not usable in client side code (directly inside components).
+NOTE: all the code you write inside components will be shipped to client (browser) and code not included in Components are supposed to be server (node) code.
+
+!!! BUT if you really want to ship values from .env to browser you have to start the name of your variable with `NEXT_PUBLIC_` in .env file.
+For example if I want a variable named `MISS_YOU` i have to write like `NEXT_PUBLIC_MISS_YOU = "I do miss you though."`
+
+If you need env variable anywhere other than client side, you don't have to use `NEXT_PUBLIC_` it's only mandatory for client side var shipping.
+
+EXAMPLE: `./.env.local`
+```
+DB_NAME = "AZEEK"
+DB_GITHUB = "https://github.com/azeek21/"
+NEXT_PUBLIC_MISS_YOU = "I miss you..."
+```
+In `./src/pages/env.tsx`
+```
+export default ({env}: {env: {DB_NAME: string, DB_GITHUB: string}}) => {
+    return (
+        <>
+        <h3>Below are read from .env files in the server inside getServerSideProps()</h3>
+            <p>{env.DB_NAME}</p>
+            <a href={env.DB_GITHUB}>My github page here ...</a>
+            <p>Below line is read from publick env variable </p>
+            <p>{process.env.NEXT_PUBLIC_MISS_YOU}</p>
+        </>
+    )
+}
+
+export async function getServerSideProps() {
+
+    const env = {...process.env};
+    return {
+        props: {
+            env: env
+        }
+    }
+}
+```
