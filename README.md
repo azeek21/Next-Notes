@@ -1381,3 +1381,39 @@ export async function getStaticProps(context: GetStaticPropsContext) {
 }
 ```
 Now if you run the app and go to ```http://localhost:3000/api/v1/preview?redirect=/preview-mode``` preview mode will be enabled and you will be redirected to ```http://localhost:3000/preview-mode``` but with different data as we are returning different msg from getStaticProps if preview mode enabled. Now you can refresh the page and test the page as much as you want and on every refresh getStaticProps will be called in the server and page will be regenerated as it's working in SSR mode. To disable preview mode just go to ```http://localhost:3000/api/v1/preview/disable``` and go back to your page, now it's disabled.
+
+## Redirecting
+* Useful when re organizing website and urls are changed or maybe, site is in maintanance and we want temporarily redirect users to another page.
+* If user has saved an old url to your site and tries to use it, redirects can be very useful, aslo for cached search engines too.
+* As redirecting happens on the server, there will not be any content flash or glitches visible to the user.
+* It's very simple to set up redirects with nextJs. <br/>
+HOWTO: 
+1. in `./next.config.js` add below lines
+`./next.config.js` :arrow-down:
+```
+module.exports = {
+    reactStrictMode = true,
+    redirects: asnyc () => {
+        return [
+            {
+                source: './about',
+                destination: '/',
+                permanent: 'true' 
+            },
+        ]
+    }
+}
+```
+That's it :smile: <br/>
+Explanation: the above ```redirects: async () {}``` is a must and it has to return an array of object with these three attributes -> `source, destination, premanent`
+* source : string -> relative url of the page which needs to be users redirected from
+* destination: string -> relative url of the page which source url needs to be redirected to
+* permanent: bool -> if change is permanent or temporary.
+
+
+NOTE: `permanent: true` redturns an response status of `308` which tells search engines to stop using this url and save the redirected new one and <br/>
+`permanent: false` returns response satatus code of `307` which tells page is under maintainance and will be back soon so that crawlers check for this url every time and they will not drop it.
+BE CAREFUL while setting `permanent: true` or `permanent: false`
+
+NOTE: After changing any settings or config files it's a good idea to restart the dev server :smile:
+THere's a lot more to topic of redirecting, please learn more at <a href="https://nextjs.org/docs/api-reference/next.config.js/redirects"> NextJs redirects documentation </a>
