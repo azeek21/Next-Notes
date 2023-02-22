@@ -1472,3 +1472,24 @@ DB_NAME = "your name"
 DB_GITHUB = "link to your github account"
 NEXT_PUBLIC_MISS_YOU ="Write here if you missed someone like I did"
 ```
+
+# Authentication (NextAuth)
+* Eventually, most of the time our apps grow around users. 
+* And there's the conondrum of Identitiy and access
+    - Identitiy: Verifies who a user is 
+    - Access: virifies what permisions the user has.
+* As NextJs is a full stack solution, topic of authentication is a bit more verbose in comparison to ReactJs. If there's only client side authentication in ReactJs, NextJs has three perspectives to authenticate a user
+    1. Client Side
+    2. Server Side Authentication
+    3. Api Routes Authentication
+* User data. <br/>
+
+## NextAuth.js
+* Is recomennded way of handling authentiaction with nextjs, as there's no point writing from scrach and implementing all above scenarios and still being under high risk of vlunerabilities.
+* NextAuth is open soruce, most recommended way of handlign auth in nextJs.
+
+### installing and set up
+
+
+
+
