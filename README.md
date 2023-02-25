@@ -1,7 +1,6 @@
-# My note while learning NextJs
+# My notes while learning NextJs
+<i> I tooke them during the process of learnning based on knowledge and practice. `This is README with more than 1500 lines.` Feel free to read and learn from it. But I would highly recommend learning from official documentation of NextJs. </i>
 
-
-# routing
 Contents: <br/>
 <a href="#nested-routes">Nested routess </a> <br/>
 <a href="#dynamic-routes">Dynamic routes</a><br/>
@@ -20,7 +19,13 @@ Contents: <br/>
 ----- <a href="#programmatically-navigation"> Client side navigation with JavaScript </a>   <br/>
 ---------- <a href="#--alternative-in-programmatically-navigation"> alternative to Link's replace attribute with JavaScript </a><br/>
 <a href="#custom-404-page"> Custom 404 Page </a><br/><br/><br/>
-nextjs has file/page based routing. Every file inside pages/ folder becomes a route and pages/index.tsx/jsx/js/ts becomes the root route. 
+
+# Authentication example.
+### I wanted to make my example authentication with it's own readme on a different repository, Please go to <br/>
+<a href="https://github.com/azeek21/next-auth-example"> NextAuth example </a> 
+
+# routing
+* nextjs has file/page based routing. Every file inside pages/ folder becomes a route and pages/index.tsx/jsx/js/ts becomes the root route. 
 
 e.g: pages/home.tsx is a route wich renders default exported component inside home.tsx. When you visit localhost:3000/home/ this home.tsx get's rendered. Interesting :thinking:.
 
@@ -1472,3 +1477,7 @@ DB_NAME = "your name"
 DB_GITHUB = "link to your github account"
 NEXT_PUBLIC_MISS_YOU ="Write here if you missed someone like I did"
 ```
+# Authentication
+
+### I wanted to make my example authentication with it's own readme on a different repository, Please go to <br/>
+<a href="https://github.com/azeek21/next-auth-example"> NextAuth example </a> to see. 
