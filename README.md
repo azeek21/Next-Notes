@@ -1,5 +1,5 @@
 # My notes while learning NextJs
-<i> I tooke them during the process of learnning based on knowledge and practice. `This is README with more than 1500 lines.` Feel free to read and learn from it. But I would highly recommend learning from official documentation of NextJs. </i>
+<i> I took them during the process of learnning based on knowledge and practice. `This is a README with more than 1500 lines.` Feel free to read and learn from it. But I would highly recommend learning from official documentation of NextJs. </i>
 
 Contents: <br/>
 <a href="#nested-routes">Nested routess </a> <br/>
